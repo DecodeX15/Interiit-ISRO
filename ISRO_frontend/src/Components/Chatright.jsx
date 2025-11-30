@@ -66,7 +66,7 @@ export default function Chatright() {
       {/* NO CHAT SELECTED */}
       {!activeSessionId ? (
         <div className="flex-1 flex items-center justify-center opacity-70">
-          Select a chat to talk with GeoNLI
+          Select or create a chat to talk with GeoNLI
         </div>
       ) : null}
 

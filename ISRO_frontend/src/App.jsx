@@ -7,7 +7,7 @@ import Dashboard from "./Pages/Dashboard.jsx";
 export default function App() {
   return (
     <div className="w-screen h-screen bg-white dark:bg-[#0d0d0f] transition-colors duration-300 overflow-hidden">
-      {/* <Navbar />   */}
+      <Navbar />  
       
       <div className="pt-16 h-screen overflow-hidden">
         <BrowserRouter>

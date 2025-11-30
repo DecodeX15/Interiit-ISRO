@@ -80,12 +80,23 @@ export default function Chatmiddle() {
         item.publicImageURL = cloudURL;
       }
     });
-    if (sessions.length > 0) {
-      localStorage.setItem("GeoNLI_Sessions", JSON.stringify(sessions));
-      setFinalImage(null);
-      setTempPreview(null);
-      fileRef.current = null;
-    }
+    const updated = sessions.map((s) => {
+      if (s.sessionId === activeSessionId.sessionId) {
+        const updatedSession = {
+          ...s,
+          publicImageURL: cloudURL,
+        };
+        setActiveSessionId(updatedSession);
+        return updatedSession;
+      }
+      return s;
+    });
+    setSessions(updated);
+    localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updated));
+    setMessage("");
+    setFinalImage(null);
+    setTempPreview(null);
+    fileRef.current = null;
   };
 
   const cancel = () => {
