@@ -6,7 +6,7 @@ export default function Chatmiddle() {
   const { theme } = useContext(ThemeContext);
 
   const isDark = theme === "dark";
-  const bg = isDark ? "bg-[#0d0d0f]" : "bg-[#F8F2E9]";
+  const bg = isDark ? "bg-[#0d0d0f]" : "bg-[#f9f9f9]";
   const text = isDark ? "text-gray-200" : "text-gray-900";
   const border = isDark ? "border-gray-700" : "border-gray-300";
 
@@ -84,6 +84,8 @@ export default function Chatmiddle() {
     <div
       className={`relative h-full w-full flex items-center justify-center ${bg} ${text} overflow-hidden`}
     >
+
+      {/* FINAL IMAGE */}
       {finalImage && !tempPreview && (
         <img
           src={finalImage}
@@ -92,6 +94,7 @@ export default function Chatmiddle() {
         />
       )}
 
+      {/* IF NO IMAGE */}
       {!finalImage && !tempPreview && (
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
           <div
@@ -153,6 +156,32 @@ export default function Chatmiddle() {
         </div>
       )}
 
+      {/* TOOLBAR (when final image exists) */}
+      {finalImage && (
+        <div className="absolute top-4 right-4 flex gap-2 z-20">
+          <button
+            onClick={() => fileInputRef.current.click()}
+            className="px-3 py-1 bg-gray-800/60 hover:bg-gray-800 text-white rounded-md text-sm"
+          >
+            Replace
+          </button>
+
+          <button
+            onClick={removeImage}
+            className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm"
+          >
+            Remove
+          </button>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleFiles(e.target.files)}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,23 +1,21 @@
 import { useContext } from "react";
 import { ThemeContext } from "../Context/theme/Themecontext.jsx";
 
-export default function RightPanel() {
+export default function Chatright() {
   const { theme } = useContext(ThemeContext);
 
   const isDark = theme === "dark";
-  const bg = isDark ? "#0b0b0d" : "#ffffff";
+  const bg = isDark ? "#0b0b0d" : "#F8F2E9";
   const text = isDark ? "#ffffff" : "#000000";
   const border = isDark ? "#1f1f22" : "#e3e3e3";
 
   return (
     <div
-      className="w-1/5 h-full flex flex-col"
+      className="h-full flex flex-col"
       style={{ background: bg, color: text, borderLeft: `1px solid ${border}` }}
     >
-      {/* MESSAGES */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-        {/* USER MESSAGE */}
         <div
           className="p-3 rounded-xl shadow"
           style={{
@@ -29,7 +27,6 @@ export default function RightPanel() {
           <p className="mt-1 text-sm">Describe the image.</p>
         </div>
 
-        {/* AI MESSAGE */}
         <div
           className="p-3 rounded-xl shadow"
           style={{
@@ -42,14 +39,13 @@ export default function RightPanel() {
         </div>
       </div>
 
-      {/* INPUT BOX */}
       <div
         className="p-3 flex items-center gap-2"
         style={{ borderTop: `1px solid ${border}` }}
       >
         <input
           placeholder="Ask something..."
-          className="flex-1 px-4 py-2 rounded-xl outline-none transition"
+          className="flex-1 px-4 py-2 rounded-xl outline-none"
           style={{
             background: isDark ? "#111114" : "#f4f4f4",
             border: `1px solid ${border}`,
