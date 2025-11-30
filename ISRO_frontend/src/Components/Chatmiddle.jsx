@@ -13,32 +13,68 @@ export default function Chatmiddle() {
   const [tempPreview, setTempPreview] = useState(null);
   const [finalImage, setFinalImage] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+
+  const [uploading, setUploading] = useState(false); // 🔥 NEW: loader state
+
   const fileInputRef = useRef(null);
   const fileRef = useRef(null);
 
+  // CLOUDINARY UPLOAD
+  const uploadToCloudinary = async () => {
+    if (!fileRef.current) {
+      alert("No image selected!");
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", fileRef.current);
+    formData.append("upload_preset", "unsigned_uploads");
+
+    try {
+      const res = await fetch(
+        "https://api.cloudinary.com/v1_1/dyvolu8tc/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      console.log("Cloudinary Response:", data);
+      return data.secure_url;
+    } catch (error) {
+      console.error("Cloudinary Upload Error:", error);
+      alert("Upload failed!");
+      return null;
+    }
+  };
+
   const handleFiles = (files) => {
     if (!files || files.length === 0) return;
-
-    // Allow only ONE image.
     if (finalImage) {
-      alert("Only one image allowed. Remove the current image first.");
+      alert("Only one image allowed. Remove current image first.");
       return;
     }
 
     const file = files[0];
     const url = URL.createObjectURL(file);
 
-    // If temp exists, revoke it
     if (tempPreview) URL.revokeObjectURL(tempPreview);
 
     fileRef.current = file;
     setTempPreview(url);
   };
 
-  const confirm = () => {
+  // CONFIRM (Upload + Show Loader)
+  const confirm = async () => {
+    setUploading(true); 
+    const cloudURL = await uploadToCloudinary();
+    setUploading(false); 
+    if (!cloudURL) return;
     if (finalImage) URL.revokeObjectURL(finalImage);
     setFinalImage(tempPreview);
     setTempPreview(null);
+    console.log("CLOUD URL:", cloudURL);
   };
 
   const cancel = () => {
@@ -55,22 +91,18 @@ export default function Chatmiddle() {
 
   const dragOver = (e) => {
     e.preventDefault();
-    e.stopPropagation();
     setDragActive(true);
   };
 
   const dragLeave = (e) => {
     e.preventDefault();
-    e.stopPropagation();
     setDragActive(false);
   };
 
   const drop = (e) => {
     e.preventDefault();
-    e.stopPropagation();
     setDragActive(false);
-    const files = e.dataTransfer.files;
-    handleFiles(files);
+    handleFiles(e.dataTransfer.files);
   };
 
   useEffect(() => {
@@ -84,21 +116,35 @@ export default function Chatmiddle() {
     <div
       className={`relative h-full w-full flex items-center justify-center ${bg} ${text} overflow-hidden`}
     >
+
+      {/* FINAL IMAGE */}
       {finalImage && !tempPreview && (
-        <img
-          src={finalImage}
-          alt="Uploaded"
-          className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-        />
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src={finalImage}
+            alt="Uploaded"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+          />
+
+          <button
+            onClick={removeImage}
+            className="absolute top-5 right-5 px-3 py-1 bg-red-600 text-white rounded-md"
+          >
+            Remove
+          </button>
+        </div>
       )}
 
+      {/* DROPZONE */}
       {!finalImage && !tempPreview && (
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6">
           <div
             onDragOver={dragOver}
             onDragLeave={dragLeave}
             onDrop={drop}
-            className={`${border} ${dragActive ? "shadow-[0_0_20px_rgba(0,150,255,0.4)] border-blue-500" : ""} 
+            className={`${border} ${
+              dragActive ? "shadow-[0_0_20px_rgba(0,150,255,0.4)] border-blue-500" : ""
+            }
               border-2 border-dashed rounded-xl w-[400px] max-w-[85%] h-[220px] flex 
               flex-col items-center justify-center gap-3 cursor-pointer transition`}
             onClick={() => fileInputRef.current.click()}
@@ -111,22 +157,25 @@ export default function Chatmiddle() {
             <input
               type="file"
               ref={fileInputRef}
-              className="hidden"
               accept="image/*"
+              className="hidden"
               onChange={(e) => handleFiles(e.target.files)}
             />
           </div>
 
           <p className="text-xs mt-4 opacity-50">
-            Only one image is allowed per session
+            Only one image allowed per session
           </p>
         </div>
       )}
 
-      {/* TEMP PREVIEW MODE */}
       {tempPreview && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm px-6">
-          <div className={`rounded-xl p-6 shadow-2xl ${isDark ? "bg-[#141416]" : "bg-white"} w-[320px]`}>
+          <div
+            className={`rounded-xl p-6 shadow-2xl ${
+              isDark ? "bg-[#141416]" : "bg-white"
+            } w-[320px]`}
+          >
             <p className="text-sm opacity-70 mb-3">Preview selected image</p>
 
             <img
@@ -136,23 +185,35 @@ export default function Chatmiddle() {
             />
 
             <div className="flex gap-3">
+              
               <button
                 onClick={confirm}
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+                disabled={uploading} 
+                className={`flex-1 px-4 py-2 rounded-lg text-white 
+                  ${uploading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
               >
-                Continue
+                {uploading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Uploading...
+                  </div>
+                ) : (
+                  "Continue"
+                )}
               </button>
+
               <button
                 onClick={cancel}
+                disabled={uploading} 
                 className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white"
               >
                 Cancel
               </button>
+
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
