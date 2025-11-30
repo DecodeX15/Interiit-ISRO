@@ -76,13 +76,8 @@ export default function Chatmiddle() {
     console.log("CLOUD URL:", cloudURL);
     sessions.forEach((item) => {
       if (item.sessionId === activeSessionId.sessionId) {
-        console.log(item);
         console.log("match");
         item.publicImageURL = cloudURL;
-      } else {
-        console.log("no");
-        console.log(item.sessionId);
-        console.log(activeSessionId);
       }
     });
     if (sessions.length > 0) {

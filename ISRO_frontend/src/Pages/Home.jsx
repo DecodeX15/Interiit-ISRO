@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun,Info, MessageSquare, Plus, Rocket, Satellite, Globe, Sparkles, ChevronDown, Zap, Shield, Database } from 'lucide-react';
 import Isro from '../assets/ISRO-Color.svg'
+import StarField from '../Components/ui/StarField.jsx';
+import { TypingAnimation } from "../Components/ui/typing-animation.jsx"
 function Home() {
   const [darkMode, setDarkMode] = useState(true);
   const [scrollY, setScrollY] = useState(0);
@@ -26,23 +28,23 @@ function Home() {
   );
 
   // Star field background
-  const StarField = () => (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(50)].map((_, i) => (
-        <div
-          key={i}
-          className={`absolute w-1 h-1 rounded-full ${darkMode ? 'bg-white' : 'bg-gray-400'}`}
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            opacity: Math.random() * 0.5 + 0.2,
-            animation: `twinkle ${Math.random() * 3 + 2}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
+  // const StarField = () => (
+  //   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  //     {[...Array(50)].map((_, i) => (
+  //       <div
+  //         key={i}
+  //         className={`absolute w-1 h-1 rounded-full ${darkMode ? 'bg-white' : 'bg-gray-400'}`}
+  //         style={{
+  //           left: `${Math.random() * 100}%`,
+  //           top: `${Math.random() * 100}%`,
+  //           opacity: Math.random() * 0.5 + 0.2,
+  //           animation: `twinkle ${Math.random() * 3 + 2}s ease-in-out infinite`,
+  //           animationDelay: `${Math.random() * 2}s`,
+  //         }}
+  //       />
+  //     ))}
+  //   </div>
+  // );
   return (
     <>
      <div className={`max-h-screen min-h-screen transition-colors duration-500 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-b from-blue-50 to-white'}`}>
@@ -109,10 +111,10 @@ function Home() {
               {/* </div> */}
               <div>
                 <span className={`text-xl font-bold block ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  vyomaAI
+                  GeoNLI
                 </span>
                 <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  GeoSpacing Assistant
+                  Inter IIT Tech Meet 14.0
                 </span>
               </div>
             </div>
@@ -156,11 +158,14 @@ function Home() {
               </span>
             </div>
             
+
             <h1 className={`text-5xl md:text-7xl font-bold leading-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              A picture worth
+              A picture worth 
               <span className="block mt-2 text-orange-500">
+            <TypingAnimation>
                 a Thousand Words
-              </span>
+            </TypingAnimation>
+              </span> 
             </h1>
             
             <p className={`text-xl md:text-2xl max-w-3xl mx-auto ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
@@ -171,12 +176,9 @@ function Home() {
           {/* CTA Buttons */}
           <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 ${isVisible ? 'animate-fadeInUp' : 'opacity-0'}`} style={{ animationDelay: '0.2s' }}>
             <button 
-            onClick={() => window.location.href = '/chat'}
-            className={`group relative px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300 ${
-              darkMode 
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' 
-                : 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600'
-            } text-white shadow-lg hover:shadow-2xl transform hover:scale-105`}>
+            onClick={() => window.location.href = '/dashboard'}
+            className={`group relative px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300 bg-blue-700 hover:bg-orange-700
+           text-white shadow-lg hover:shadow-2xl transform hover:scale-105`}>
               <span className="flex items-center gap-2">
                 <Rocket className="w-5 h-5" />
                 Get Started
@@ -327,13 +329,13 @@ function Home() {
               </div> */}
                <img src={Isro} alt="Logo" className="w-20 h-20" />
               <div>
-                <p className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Inter IIT Tech Meet 14.0</p>
-                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>GeoSpacing Assistant</p>
+                <p className={`font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>GeoNLI</p>
+                <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Inter IIT Tech Meet 14.0</p>
               </div>
             </div>
             
             <div className="flex items-center gap-8">
-              <a href="#" className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
+              <a href="https://github.com/DecodeX15/Interiit-ISRO" target='blank' className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
                 Codebase
               </a>
               <a href="#" className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
