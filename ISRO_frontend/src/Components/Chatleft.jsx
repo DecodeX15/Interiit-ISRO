@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { ThemeContext } from "../Context/theme/Themecontext.jsx";
 import { Diff } from "lucide-react";
 import { v4 as uuid } from "uuid";
+import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 
 function createNewSession(chatName) {
   return {
@@ -14,7 +15,8 @@ function createNewSession(chatName) {
 }
 export default function ChatLeft() {
   const { theme } = useContext(ThemeContext);
-
+  const { sessions, setSessions, activeSessionId, setActiveSessionId } =
+    useContext(sessioncontext);
   const isDark = theme === "dark";
   const bg = isDark ? "#0b0b0d" : "#F8F2E9";
   const text = isDark ? "#ffffff" : "#000000";
@@ -23,11 +25,11 @@ export default function ChatLeft() {
   // Modal states
   const [open, setOpen] = useState(false);
   const [chatName, setChatName] = useState("");
-  const sessions = JSON.parse(localStorage.getItem("GeoNLI_Sessions")) || [];
   const handlesubmit = (e) => {
     setOpen(false);
     console.log(chatName);
     const newSession = createNewSession(chatName);
+    setActiveSessionId(newSession);
     sessions.push(newSession);
     localStorage.setItem("GeoNLI_Sessions", JSON.stringify(sessions));
   };
@@ -59,28 +61,50 @@ export default function ChatLeft() {
           <> No chat create some session </>
         ) : (
           <>
-            {sessions.map((session) => (
-              <div
-                key={session.sessionId}
-                className="group cursor-pointer px-4 py-3 border-b border-transparent hover:border-[#2d2d30] transition-all"
-                style={{
-                  background: isDark ? "transparent" : "transparent",
-                }}
-              >
-                <p
-                  className="font-medium truncate text-sm transition-colors 
-                 group-hover:text-[#7B3306]"
+            {sessions.map((session) => {
+              const isActive = activeSessionId?.sessionId === session.sessionId;
+
+              return (
+                <div
+                  onClick={() => {
+                    setActiveSessionId(session);
+                    console.log("chat switch ");
+                    console.log(session);
+                  }}
+                  key={session.sessionId}
+                  className={`
+        group cursor-pointer px-4 py-3 border-b transition-all
+        ${
+          isActive
+            ? "bg-[#7B3306]/20 border-[#7B3306]"
+            : "hover:bg-[#2d2d30]/30"
+        }
+      `}
+                  style={{
+                    color: isDark ? "#ffffff" : "#000000",
+                  }}
                 >
-                  {session.name}
-                </p>
-                <p
-                  className="text-[11px] mt-1 opacity-60"
-                  style={{ color: isDark ? "#cccccc" : "#444" }}
-                >
-                  {session.messages.length} messages
-                </p>
-              </div>
-            ))}
+                  <p
+                    className={`font-medium truncate text-sm transition-colors
+          ${
+            isActive
+              ? "text-[#7B3306] font-semibold"
+              : "group-hover:text-[#7B3306]"
+          }
+        `}
+                  >
+                    {session.name}
+                  </p>
+
+                  <p
+                    className="text-[11px] mt-1 opacity-60"
+                    style={{ color: isDark ? "#cccccc" : "#444" }}
+                  >
+                    {session.messages.length} messages
+                  </p>
+                </div>
+              );
+            })}
           </>
         )}
       </div>
