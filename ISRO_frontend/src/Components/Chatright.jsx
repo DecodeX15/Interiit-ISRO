@@ -2,6 +2,8 @@ import { useContext, useRef, useState, useEffect } from "react";
 import { ThemeContext } from "../Context/theme/Themecontext.jsx";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 import { v4 as uuid } from "uuid";
+import handlemodelresponse from "./apicaller.js";
+import { Forward, Square, SquareX } from "lucide-react";
 
 function createMessage(role, content) {
   return {
@@ -18,6 +20,7 @@ export default function Chatright() {
     useContext(sessioncontext);
 
   const [message, setMessage] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const scrollContainerRef = useRef(null);
   const bottomRef = useRef(null);
@@ -33,29 +36,55 @@ export default function Chatright() {
     }
   }, [activeSessionId?.messages]);
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-    if (!activeSessionId) return alert("Select a chat first!");
+  const handleSend = async (e) => {
+    try {
+      e.preventDefault();
+      if (!message.trim()) return;
+      if (!activeSessionId) return alert("Select a chat first!");
+      if (aiLoading) return;
+      const userMessage = createMessage("user", message);
 
-    const newMessage = createMessage("users", message);
+      const updateduser = sessions.map((s) => {
+        if (s.sessionId === activeSessionId.sessionId) {
+          const updatedSession = {
+            ...s,
+            messages: [...s.messages, userMessage],
+          };
+          setActiveSessionId(updatedSession);
+          return updatedSession;
+        }
+        return s;
+      });
 
-    const updated = sessions.map((s) => {
-      if (s.sessionId === activeSessionId.sessionId) {
-        const updatedSession = {
-          ...s,
-          messages: [...s.messages, newMessage],
-        };
-        setActiveSessionId(updatedSession);
-        return updatedSession;
-      }
-      return s;
-    });
-
-    setSessions(updated);
-    localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updated));
-
-    setMessage("");
+      setSessions(updateduser);
+      localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updateduser));
+      setMessage("");
+      setAiLoading(true);
+      const res = await handlemodelresponse(
+        message,
+        activeSessionId.sessionId,
+        activeSessionId.publicImageURL
+      );
+      console.log(res);
+      const aimessage = createMessage("ai", res);
+      const updatedai = updateduser.map((s) => {
+        if (s.sessionId === activeSessionId.sessionId) {
+          const updatedSession = {
+            ...s,
+            messages: [...s.messages, aimessage],
+          };
+          setActiveSessionId(updatedSession);
+          return updatedSession;
+        }
+        return s;
+      });
+      setSessions(updatedai);
+      localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updatedai));
+      setAiLoading(false);
+      // respinse ke baad yaha pe local mein save karna hai
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -103,9 +132,9 @@ export default function Chatright() {
 
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer"
                 >
-                  Send
+                  <Forward />
                 </button>
               </form>
             </div>
@@ -152,12 +181,27 @@ export default function Chatright() {
                   )
                 )}
 
+                {/* AI LOADER BUBBLE */}
+                {aiLoading && (
+                  <div
+                    className="p-3 rounded-xl shadow self-start max-w-[85%] mr-auto flex gap-2 items-center"
+                    style={{
+                      background: isDark ? "#131317" : "#f7f7f7",
+                      border: `1px solid ${border}`,
+                    }}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-150"></span>
+                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse delay-300"></span>
+                  </div>
+                )}
+
                 <div ref={bottomRef}></div>
               </div>
               {/* FIXED BOTTOM INPUT */}
               <form
                 onSubmit={handleSend}
-                className="p-3 flex items-center gap-2 border-t"
+                className="p-3 flex items-center gap-2 border-t "
                 style={{
                   borderTop: `1px solid ${border}`,
                   background: bg,
@@ -174,13 +218,22 @@ export default function Chatright() {
                     color: text,
                   }}
                 />
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white"
-                >
-                  Send
-                </button>
+                {aiLoading ? (
+                  <>
+                    <div className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer">
+                      <SquareX />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer"
+                    >
+                      <Forward />
+                    </button>
+                  </>
+                )}
               </form>
             </>
           )}
