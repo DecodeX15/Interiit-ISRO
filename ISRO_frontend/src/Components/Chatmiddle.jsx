@@ -1,14 +1,15 @@
 // src/components/Chatmiddle.jsx
 import { useContext, useEffect, useRef, useState } from "react";
-import { ThemeContext } from "../Context/theme/Themecontext.jsx";
-import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 
+import { sessioncontext } from "../Context/session/sessioncontext.jsx";
+import { useTheme } from "../Context/theme/Themecontext.jsx";
 export default function Chatmiddle() {
-  const { theme } = useContext(ThemeContext);
+  
+  const {darkMode, toggleTheme} = useTheme();
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
-  const isDark = theme === "dark";
-  const bg = isDark ? "bg-[#0d0d0f]" : "bg-[#F8F2E9]";
+  const isDark = darkMode;
+  const bg = isDark ? "bg-gray-900" : "bg-gray-300";
   const text = isDark ? "text-gray-200" : "text-gray-900";
   const border = isDark ? "border-gray-700" : "border-gray-300";
 
@@ -125,7 +126,7 @@ export default function Chatmiddle() {
         className={`h-full w-full flex items-center justify-center ${bg} ${text} overflow-hidden`}
       >
         <p className="opacity-60">
-          No current chat. Please create or select a chat.
+          No current chat. Please upload image or select a session.
         </p>
       </div>
     );
@@ -133,11 +134,11 @@ export default function Chatmiddle() {
 
   return (
     <div
-      className={`relative h-full w-full flex items-center justify-center ${bg} ${text} overflow-hidden p-2`}
+      className={`m-8 relative h-full w-full flex items-center justify-center ${bg} ${text} overflow-hidden p-2`}
     >
       {activeSessionId.publicImageURL ? (
         <>
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full flex items-start justify-start">
             <img
               src={activeSessionId.publicImageURL}
               alt="Uploaded"
