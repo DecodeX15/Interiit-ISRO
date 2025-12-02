@@ -3,7 +3,7 @@ import { ThemeContext } from "../Context/theme/Themecontext.jsx";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 import { v4 as uuid } from "uuid";
 import handlemodelresponse from "./apicaller.js";
-import { Forward, Square, SquareX } from "lucide-react";
+import { Forward, SquareX } from "lucide-react";
 
 function createMessage(role, content) {
   return {
@@ -30,11 +30,18 @@ export default function Chatright() {
   const text = isDark ? "#ffffff" : "#000000";
   const border = isDark ? "#1f1f22" : "#e3e3e3";
 
+  // scroll to bottom on messages change
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [activeSessionId?.messages]);
+
+  // jab user chat switch kare → input / loading reset
+  useEffect(() => {
+    setMessage("");
+    setAiLoading(false);
+  }, [activeSessionId?.sessionId]);
 
   const handleSend = async (e) => {
     try {
@@ -42,48 +49,83 @@ export default function Chatright() {
       if (!message.trim()) return;
       if (!activeSessionId) return alert("Select a chat first!");
       if (aiLoading) return;
+
+      // snapshot so that async ke beech me activeSession change ho jaye to bhi
+      const targetSessionId = activeSessionId.sessionId;
+      const targetImageURL = activeSessionId.publicImageURL;
+
       const userMessage = createMessage("user", message);
 
-      const updateduser = sessions.map((s) => {
-        if (s.sessionId === activeSessionId.sessionId) {
-          const updatedSession = {
+      // 1) user msg session me daalo (immutably)
+      const updatedUserSessions = sessions.map((s) => {
+        if (s.sessionId === targetSessionId) {
+          return {
             ...s,
             messages: [...s.messages, userMessage],
           };
-          setActiveSessionId(updatedSession);
-          return updatedSession;
         }
         return s;
       });
 
-      setSessions(updateduser);
-      localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updateduser));
+      setSessions(updatedUserSessions);
+      localStorage.setItem(
+        "GeoNLI_Sessions",
+        JSON.stringify(updatedUserSessions)
+      );
+
+      // agar user abhi bhi isi chat me hai to activeSession bhi update karo
+      setActiveSessionId((prev) =>
+        prev && prev.sessionId === targetSessionId
+          ? {
+              ...prev,
+              messages: [...prev.messages, userMessage],
+            }
+          : prev
+      );
+
       setMessage("");
       setAiLoading(true);
+
+      // 2) model se response
       const res = await handlemodelresponse(
         message,
-        activeSessionId.sessionId,
-        activeSessionId.publicImageURL
+        targetSessionId,
+        targetImageURL
       );
       console.log(res);
-      const aimessage = createMessage("ai", res);
-      const updatedai = updateduser.map((s) => {
-        if (s.sessionId === activeSessionId.sessionId) {
-          const updatedSession = {
+
+      const aiMessage = createMessage("ai", res);
+
+      // 3) AI msg session me daalo
+      const updatedAISessions = updatedUserSessions.map((s) => {
+        if (s.sessionId === targetSessionId) {
+          return {
             ...s,
-            messages: [...s.messages, aimessage],
+            messages: [...s.messages, aiMessage],
           };
-          setActiveSessionId(updatedSession);
-          return updatedSession;
         }
         return s;
       });
-      setSessions(updatedai);
-      localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updatedai));
+
+      setSessions(updatedAISessions);
+      localStorage.setItem(
+        "GeoNLI_Sessions",
+        JSON.stringify(updatedAISessions)
+      );
+
+      // phir se, sirf tab activeSession update karo jab user still isi chat me ho
+      setActiveSessionId((prev) =>
+        prev && prev.sessionId === targetSessionId
+          ? {
+              ...prev,
+              messages: [...prev.messages, aiMessage],
+            }
+          : prev
+      );
       setAiLoading(false);
-      // respinse ke baad yaha pe local mein save karna hai
     } catch (error) {
       console.log(error);
+      setAiLoading(false);
     }
   };
 
@@ -129,7 +171,6 @@ export default function Chatright() {
                     color: text,
                   }}
                 />
-
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer"
@@ -198,6 +239,7 @@ export default function Chatright() {
 
                 <div ref={bottomRef}></div>
               </div>
+
               {/* FIXED BOTTOM INPUT */}
               <form
                 onSubmit={handleSend}
@@ -219,20 +261,16 @@ export default function Chatright() {
                   }}
                 />
                 {aiLoading ? (
-                  <>
-                    <div className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer">
-                      <SquareX />
-                    </div>
-                  </>
+                  <div className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer">
+                    <SquareX />
+                  </div>
                 ) : (
-                  <>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer"
-                    >
-                      <Forward />
-                    </button>
-                  </>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl text-sm shadow text-white cursor-pointer"
+                  >
+                    <Forward />
+                  </button>
                 )}
               </form>
             </>

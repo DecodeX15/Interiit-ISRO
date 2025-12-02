@@ -1,15 +1,14 @@
-import React from 'react'
+import React from "react";
 
 function StarField() {
   return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {[...Array(50)].map((_, i) => (
         <div
           key={i}
           //  ${darkMode ? 'bg-white' : 'bg-gray-400'}
-          className='absolute w-1 h-1 rounded-full
-             bg-white'
-            
+          className="absolute w-1 h-1 rounded-full
+             bg-white"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -20,7 +19,7 @@ function StarField() {
         />
       ))}
     </div>
-  )
+  );
 }
 
-export default StarField
+export default StarField;

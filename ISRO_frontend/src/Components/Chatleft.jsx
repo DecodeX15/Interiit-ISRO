@@ -10,9 +10,14 @@ function createNewSession(chatName) {
     name: chatName,
     createdAt: Date.now(),
     publicImageURL: null,
+    draftText: "",
+    aiLoading: false,
     messages: [],
+    unreadCount: 0,
+    updatedAt: Date.now(),
   };
 }
+
 export default function ChatLeft() {
   const { theme } = useContext(ThemeContext);
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
@@ -25,14 +30,38 @@ export default function ChatLeft() {
   // Modal states
   const [open, setOpen] = useState(false);
   const [chatName, setChatName] = useState("");
+
   const handlesubmit = (e) => {
-    setOpen(false);
-    console.log(chatName);
+    e.preventDefault();
+    if (!chatName.trim()) {
+      alert("Please give chat name");
+      return;
+    }
+    console.log("aaofubae");
     const newSession = createNewSession(chatName);
+    const updatedSessions = [...sessions, newSession];
+    setSessions(updatedSessions);
+    localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updatedSessions));
     setActiveSessionId(newSession);
-    sessions.push(newSession);
-    localStorage.setItem("GeoNLI_Sessions", JSON.stringify(sessions));
+    setChatName("");
+    setOpen(false);
   };
+
+  // Add this function to handle backdrop click
+  const handleBackdropClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(false);
+  };
+
+  // Add this function to handle cancel button
+  const handleCancel = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(false);
+    setChatName("");
+  };
+
   return (
     <div
       className="h-full flex flex-col"
@@ -49,6 +78,7 @@ export default function ChatLeft() {
         <h2 className="text-lg font-semibold tracking-wide">Sessions</h2>
 
         <button
+          type="button" // ADD THIS
           onClick={() => setOpen(true)}
           className="px-3 py-1 text-sm bg-[#7B3306] hover:bg-[#988d7d] transition rounded-md shadow cursor-pointer"
         >
@@ -110,47 +140,59 @@ export default function ChatLeft() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 flex items-center justify-center z-999">
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          {/* YEH WALA DIV - isme blur daalna hai */}
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setOpen(false)}
           ></div>
-          <div
-            className="relative z-50 rounded-xl shadow-xl p-6 w-[90%] max-w-sm border"
-            style={{
-              background: isDark ? "#1a1a1d" : "#ffffff",
-              borderColor: border,
-              color: text,
-            }}
+          {/* Backdrop with form inside it */}
+          <form
+            onSubmit={handlesubmit}
+            className="absolute inset-0"
+            onClick={handleBackdropClick}
           >
-            <h2 className="text-lg font-semibold mb-4">Create New Chat</h2>
-            <input
-              type="text"
-              placeholder="Enter chat name..."
-              value={chatName}
-              onChange={(e) => setChatName(e.target.value)}
-              className="w-full p-2 rounded-md border bg-transparent outline-none"
+            {/* Modal Content - Stop propagation here */}
+            <div
+              className="relative z-50 rounded-xl shadow-xl p-6 w-[90%] max-w-sm border mx-auto mt-20"
               style={{
+                background: isDark ? "#1a1a1d" : "#ffffff",
                 borderColor: border,
                 color: text,
               }}
-            />
-            <div className="flex justify-end gap-3 mt-5">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 rounded-md border hover:bg-gray-800 dark:hover:bg-[#2a2a2d] transition cursor-pointer"
-                style={{ borderColor: border, color: text }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handlesubmit}
-                className="px-4 py-2 rounded-md bg-[#7B3306] text-white hover:bg-[#A85A2C] transition cursor-pointer"
-              >
-                Create
-              </button>
+              onClick={(e) => e.stopPropagation()} // Stop click from bubbling to form
+            >
+              <h2 className="text-lg font-semibold mb-4">Create New Chat</h2>
+              <input
+                type="text"
+                placeholder="Enter chat name..."
+                value={chatName}
+                onChange={(e) => setChatName(e.target.value)}
+                className="w-full p-2 rounded-md border bg-transparent outline-none mb-4"
+                style={{
+                  borderColor: border,
+                  color: text,
+                }}
+                autoFocus
+              />
+              <div className="flex justify-end gap-3 mt-5">
+                <button
+                  type="button" // CHANGED TO button
+                  onClick={handleCancel}
+                  className="px-4 py-2 rounded-md border hover:bg-gray-800 dark:hover:bg-[#2a2a2d] transition cursor-pointer"
+                  style={{ borderColor: border, color: text }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-md bg-[#7B3306] text-white hover:bg-[#A85A2C] transition cursor-pointer"
+                >
+                  Create
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       )}
     </div>

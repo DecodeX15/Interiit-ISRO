@@ -51,16 +51,9 @@ export default function Chatmiddle() {
 
   const handleFiles = (files) => {
     if (!files || files.length === 0) return;
-    if (finalImage) {
-      alert("Only one image allowed. Remove current image first.");
-      return;
-    }
-
     const file = files[0];
     const url = URL.createObjectURL(file);
-
     if (tempPreview) URL.revokeObjectURL(tempPreview);
-
     fileRef.current = file;
     setTempPreview(url);
   };
@@ -69,34 +62,32 @@ export default function Chatmiddle() {
     setUploading(true);
     const cloudURL = await uploadToCloudinary();
     setUploading(false);
+
     if (!cloudURL) return;
+
+    // Clear temp
     if (finalImage) URL.revokeObjectURL(finalImage);
     setFinalImage(tempPreview);
     setTempPreview(null);
-    console.log("CLOUD URL:", cloudURL);
-    sessions.forEach((item) => {
-      if (item.sessionId === activeSessionId.sessionId) {
-        console.log("match");
-        item.publicImageURL = cloudURL;
-      }
-    });
+    fileRef.current = null;
+
     const updated = sessions.map((s) => {
       if (s.sessionId === activeSessionId.sessionId) {
-        const updatedSession = {
+        return {
           ...s,
           publicImageURL: cloudURL,
         };
-        setActiveSessionId(updatedSession);
-        return updatedSession;
       }
       return s;
     });
+
     setSessions(updated);
     localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updated));
-    setMessage("");
-    setFinalImage(null);
-    setTempPreview(null);
-    fileRef.current = null;
+
+    setActiveSessionId({
+      ...activeSessionId,
+      publicImageURL: cloudURL,
+    });
   };
 
   const cancel = () => {
