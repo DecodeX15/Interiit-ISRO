@@ -3,9 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Globee } from "../Components/ui/globe";
 import { GlobeeLight } from "../Components/ui/globe-light";
 import { useTheme } from "../Context/theme/Themecontext.jsx";
+import { HeroHighlightDemo } from "./HeroHighlightDemo";
 const ITEMS = [
   {
     title: "Analyze satellite imagery in seconds.",
+    text: "Analyze satellite imagery ",
+    hitext: "in seconds ",
     description:
       "Upload high-resolution satellite images with zero pixel loss, or provide structured JSON inputs. Get instant AI-powered insights including object detection, terrain features, and semantic segmentation.",
     img: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?q=80&w=2071&auto=format&fit=crop",
@@ -13,12 +16,16 @@ const ITEMS = [
   },
   {
     title: "Detect changes across the globe.",
+    text: "Detect changes ",
+    hitext: "across the globe ",
     description:
       "Track urban expansion, deforestation, natural disasters, and infrastructure development with automated temporal analysis.",
     type: "globe",
   },
   {
     title: "Natural language interface for satellite data.",
+    text: "Satellite data via",
+    hitext: " natural language ",
     description:
       "Ask questions in plain English — 'Find all airports in this region', 'Locate water bodies', 'Count vehicles' — and get precise AI-driven results.",
     img: "https://images.unsplash.com/photo-1502134249126-9f3755a50d78?q=80&w=2070&auto=format&fit=crop",
@@ -74,8 +81,14 @@ export default function RunpodStyleSlider() {
             className="space-y-8"
           >
             {/* Text Content */}
-            <div className={`space-y-4 ${darkMode ? "text-white" : "text-gray-900"}`}>
-              <h1 className="text-4xl font-bold">{item.title}</h1>
+            <div
+              className={`space-y-4 ${
+                darkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              <h1 className="text-4xl font-bold">
+                <HeroHighlightDemo text={item.text} hightext={item.hitext} />
+              </h1>
               <p className="text-lg">{item.description}</p>
             </div>
 
@@ -114,30 +127,29 @@ export default function RunpodStyleSlider() {
       <div className="w-1/2 flex items-center justify-center h-[350px]">
         <AnimatePresence mode="wait">
           {/* {item.type === "globe" ? ( */}
-            {/* // GLOBE COMPONENT for "Detect changes across the globe." */}
-            <motion.div
-              key="globe"
-              className="relative w-full h-full flex items-center justify-center"
-              initial={{ opacity: 0, x: 50, rotateY: 90 }}
-              animate={{ opacity: 1, x: 0, rotateY: 0 }}
-              exit={{ opacity: 0, x: -50, rotateY: -90 }}
-              transition={{ duration: 0.8 }}
-            >
-              {/* Globe Component */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                {darkMode ? 
+          {/* // GLOBE COMPONENT for "Detect changes across the globe." */}
+          <motion.div
+            key="globe"
+            className="relative w-full h-full flex items-center justify-center"
+            initial={{ opacity: 0, x: 50, rotateY: 90 }}
+            animate={{ opacity: 1, x: 0, rotateY: 0 }}
+            exit={{ opacity: 0, x: -50, rotateY: -90 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Globe Component */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              {darkMode ? (
                 <Globee className="h-full w-full left-40" />
-                :
-                <GlobeeLight className="h-full w-full left-40" /> 
-              }
-                  
-              </div>
+              ) : (
+                <GlobeeLight className="h-full w-full left-40" />
+              )}
+            </div>
 
-              {/* Grid overlay */}
-            </motion.div>
+            {/* Grid overlay */}
+          </motion.div>
           {/* ) : ( */}
-            {/* // REGULAR IMAGE for other slides */}
-            {/* <motion.img
+          {/* // REGULAR IMAGE for other slides */}
+          {/* <motion.img
               key={item.img}
               src={item.img}
               alt="slide"

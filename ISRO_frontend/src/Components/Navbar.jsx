@@ -15,7 +15,7 @@ export default function Navbar() {
     <>
       {/* Navigation */}
       <nav
-        className={`sticky top-0 left-0 right-0 z-50 transition-all duration-300
+        className={`top-0 left-0 right-0 z-50 transition-all duration-300
          ${
            darkMode
              ? "bg-gray-900 backdrop-blur-lg shadow-lg"

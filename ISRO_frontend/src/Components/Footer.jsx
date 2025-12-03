@@ -28,9 +28,6 @@ function Footer
             </div>
             
             <div className="flex items-center gap-8">
-              <a href="https://github.com/DecodeX15/Interiit-ISRO" target='blank' className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
-                Codebase
-              </a>
               <a href="#" className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
                 Report
               </a>

@@ -18,8 +18,12 @@ import { TypingAnimation } from "../Components/ui/typing-animation.jsx";
 import { useTheme } from "../Context/theme/Themecontext";
 import TextType from "../Components/ui/TextType.jsx";
 import StyleSlider from "../Components/Style_slider.jsx";
-import { AnimatedList, AnimatedListItem } from "../Components/ui/animated-list.jsx";
+import {
+  AnimatedList,
+  AnimatedListItem,
+} from "../Components/ui/animated-list.jsx";
 import { LayoutTextFlipDemo } from "../Components/LayoutTextFlipDemo.jsx";
+import { motion } from "framer-motion";
 function Home() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -79,7 +83,7 @@ function Home() {
                   darkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-                <LayoutTextFlipDemo/>
+                <LayoutTextFlipDemo />
                 <span className="block mt-2 text-orange-500">
                   {/* <TypingAnimation>
                 a Thousand Words
@@ -151,123 +155,220 @@ function Home() {
                 Built to Simplify Access to Earth Observation Data
               </p>
             </div>
-
             {/* <div className=""> */}
-                  <AnimatedList className="grid md:grid-cols-3 gap-8">
-              {/* Feature 1 */}
-              <FloatingElement delay={0}>
-                <div
-                  className={`group p-8 rounded-3xl transition-all duration-300 ${
-                    darkMode
-                      ? "bg-linear-to-br from-gray-800 to-gray-900 hover:from-blue-900/50 hover:to-gray-900"
-                      : "bg-linear-to-br from-white to-gray-50 hover:from-blue-50 hover:to-white"
-                  } border-2 ${
-                    darkMode
-                      ? "border-gray-700 hover:border-blue-500"
-                      : "border-gray-200 hover:border-blue-300"
-                  } shadow-xl transform hover:scale-105 hover:-translate-y-2`}
-                >
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                      darkMode ? "bg-blue-600" : "bg-blue-500"
-                    } shadow-lg group-hover:shadow-2xl transition-shadow`}
-                  >
-                    <Info className="w-8 h-8 text-white" />
-                  </div>
-                  <h3
-                    className={`text-2xl font-bold mb-4 ${
-                      darkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Precise Satellite Captioning
-                  </h3>
-                  <p
-                    className={`${
-                      darkMode ? "text-gray-400" : "text-gray-600"
-                    } leading-relaxed`}
-                  >
-                    Get a concise, accurate description summarizing the local
-                    and global attributes of small and large objects in the
-                    satellite image.
-                  </p>
-                </div>
-              </FloatingElement>
+            <div className="grid md:grid-cols-1 gap-20">
+              {/* FEATURE 1 */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.01 }}
+                className={`
+      group  rounded-3xl p-8 relative overflow-hidden mx-auto max-w-7xl
+      ${darkMode ? "bg-[#0E1525]" : "bg-white"}
+      border border-white/10 shadow-xl
+    `}
+              >
+                {/* HOVER GLOW AURA */}
+                <motion.div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-blue-600/30 blur-3xl opacity-0 group-hover:opacity-70 transition-all duration-700" />
 
-              {/* Feature 2 */}
-              <FloatingElement delay={0.2} duration={3.5}>
-                <div
-                  className={`group p-8 rounded-3xl transition-all duration-300 ${
-                    darkMode
-                      ? "bg-linear-to-br from-gray-800 to-gray-900 hover:from-purple-900/50 hover:to-gray-900"
-                      : "bg-linear-to-br from-white to-gray-50 hover:from-purple-50 hover:to-white"
-                  } border-2 ${
-                    darkMode
-                      ? "border-gray-700 hover:border-purple-500"
-                      : "border-gray-200 hover:border-purple-300"
-                  } shadow-xl transform hover:scale-105 hover:-translate-y-2`}
-                >
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                      darkMode ? "bg-purple-600" : "bg-purple-500"
-                    } shadow-lg group-hover:shadow-2xl transition-shadow`}
+                <div className="grid md:grid-cols-2 gap-10 items-center">
+                  {/* TEXT LEFT — STRONG SLIDE */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
                   >
-                    <Globe className="w-8 h-8 text-white" />
-                  </div>
-                  <h3
-                    className={`text-2xl font-bold mb-4 ${
-                      darkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Visual Object Grounding
-                  </h3>
-                  <p
-                    className={`${
-                      darkMode ? "text-gray-400" : "text-gray-600"
-                    } leading-relaxed`}
-                  >
-                    Accurately localize objects based on a query. Enhance detection reliability by maintaining consistent precision even under dynamic or noisy input conditions.
-                  </p>
-                </div>
-              </FloatingElement>
+                    <div
+                      className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-md
+            ${darkMode ? "bg-blue-600" : "bg-blue-500"}`}
+                    >
+                      <Info className="w-7 h-7 text-white" />
+                    </div>
 
-              {/* Feature 3 */}
-              <FloatingElement delay={0.4} duration={4}>
-                <div
-                  className={`group p-8 rounded-3xl transition-all duration-300 ${
-                    darkMode
-                      ? "bg-linear-to-br from-gray-800 to-gray-900 hover:from-pink-900/50 hover:to-gray-900"
-                      : "bg-linear-to-br from-white to-gray-50 hover:from-pink-50 hover:to-white"
-                  } border-2 ${
-                    darkMode
-                      ? "border-gray-700 hover:border-pink-500"
-                      : "border-gray-200 hover:border-pink-300"
-                  } shadow-xl transform hover:scale-105 hover:-translate-y-2`}
-                >
-                  <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${
-                      darkMode ? "bg-pink-600" : "bg-pink-500"
-                    } shadow-lg group-hover:shadow-2xl transition-shadow`}
+                    <h3
+                      className={`text-3xl font-bold mb-2 ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      Precise Satellite{" "}
+                      <span className="text-blue-400">Captioning</span>
+                    </h3>
+
+                    <p
+                      className={`${
+                        darkMode ? "text-gray-300" : "text-gray-700"
+                      } text-base leading-relaxed`}
+                    >
+                      Get concise, accurate descriptions summarizing both global
+                      and local attributes.
+                    </p>
+
+                    <div className="mt-6">
+                      <button
+                        className={`px-4 py-2 rounded-xl text-sm font-medium shadow-md
+              ${
+                darkMode
+                  ? "bg-blue-900/40 text-blue-300"
+                  : "bg-blue-100 text-blue-700"
+              }
+            `}
+                      >
+                        Real-time processing
+                      </button>
+                    </div>
+                  </motion.div>
+
+                  {/* IMAGE RIGHT — SMOOTH SLIDE */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.03 }}
+                    className="rounded-3xl shadow-xl overflow-hidden"
                   >
-                    <MessageSquare className="w-8 h-8 text-white" />
-                  </div>
-                  <h3
-                    className={`text-2xl font-bold mb-4 ${
-                      darkMode ? "text-white" : "text-gray-900"
-                    }`}
-                  >
-                    Geospatial Visual Question Answering (VQA)
-                  </h3>
-                  <p
-                    className={`${
-                      darkMode ? "text-gray-400" : "text-gray-600"
-                    } leading-relaxed`}
-                  >
-                    Provide accurate answers to binary, numeric, and semantic
-                    queries about the image
-                  </p>
+                    <img
+                      src="https://images.pexels.com/photos/346885/pexels-photo-346885."
+                      className="rounded-2xl w-full h-full object-cover"
+                    />
+                  </motion.div>
                 </div>
-              </FloatingElement>
-          </AnimatedList>
+              </motion.div>
+              {/* FEATURE 2 */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.01 }}
+                className={`
+      group p-8 rounded-3xl relative overflow-hidden mx-auto max-w-7xl
+      ${darkMode ? "bg-[#0E1525]" : "bg-white"}
+      border border-white/10 shadow-xl
+    `}
+              >
+                {/* hover glow */}
+                <motion.div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-purple-600/30 blur-3xl opacity-0 group-hover:opacity-70 transition-all duration-700" />
+
+                <div className="grid md:grid-cols-2 gap-10 items-center">
+                  {/* IMAGE LEFT */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.03 }}
+                    className="rounded-3xl shadow-xl overflow-hidden"
+                  >
+                    <img
+                      src="https://images.pexels.com/photos/695299/pexels-photo-695299.jpeg"
+                      className="rounded-2xl w-full h-full object-cover"
+                    />
+                  </motion.div>
+
+                  {/* TEXT RIGHT */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                  >
+                    <div
+                      className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-md
+            ${darkMode ? "bg-purple-600" : "bg-purple-500"}`}
+                    >
+                      <Globe className="w-7 h-7 text-white" />
+                    </div>
+
+                    <h3
+                      className={`text-3xl font-bold mb-2 ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      Visual Object{" "}
+                      <span className="text-purple-400">Grounding</span>
+                    </h3>
+
+                    <p
+                      className={`${
+                        darkMode ? "text-gray-300" : "text-gray-700"
+                      } text-base leading-relaxed`}
+                    >
+                      Accurate localization of objects under noisy or dynamic
+                      conditions.
+                    </p>
+                  </motion.div>
+                </div>
+              </motion.div>
+              {/* FEATURE 3 */}
+              <motion.div
+                initial={{ opacity: 0, y: 40, scale: 0.97 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.01 }}
+                className={`
+      group p-8 rounded-3xl relative overflow-hidden mx-auto max-w-7xl
+      ${darkMode ? "bg-[#0E1525]" : "bg-white"}
+      border border-white/10 shadow-xl
+    `}
+              >
+                {/* glow */}
+                <motion.div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-pink-600/30 blur-3xl opacity-0 group-hover:opacity-70 transition-all duration-700" />
+
+                <div className="grid md:grid-cols-2 gap-10 items-center">
+                  {/* TEXT LEFT */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                  >
+                    <div
+                      className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-md
+            ${darkMode ? "bg-pink-600" : "bg-pink-500"}`}
+                    >
+                      <MessageSquare className="w-7 h-7 text-white" />
+                    </div>
+
+                    <h3
+                      className={`text-3xl font-bold mb-2 ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      Geospatial <span className="text-pink-400">VQA</span>
+                    </h3>
+
+                    <p
+                      className={`${
+                        darkMode ? "text-gray-300" : "text-gray-700"
+                      } text-base leading-relaxed`}
+                    >
+                      Answer complex semantic, numeric & binary queries from
+                      satellite images.
+                    </p>
+                  </motion.div>
+
+                  {/* IMAGE RIGHT */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 120 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.7, ease: "easeOut" }}
+                    viewport={{ once: true }}
+                    whileHover={{ scale: 1.03 }}
+                    className="rounded-3xl shadow-xl overflow-hidden"
+                  >
+                    <img
+                      src="https://images.pexels.com/photos/695299/pexels-photo-695299.jpeg"
+                      className="rounded-2xl w-full h-full object-cover"
+                    />
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
             {/* </div> */}
           </div>
         </section>

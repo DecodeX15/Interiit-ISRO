@@ -78,7 +78,7 @@ const Dashboard = () => {
 
     return matchesSearch && matchesCategory;
   });
-  console.log("aefoin")
+  console.log("aefoin");
   console.log(filteredSessions);
   // Extract tags from session
   const getSessionTags = (session) => {
@@ -312,10 +312,10 @@ const Dashboard = () => {
                 );
                 const tags = getSessionTags(session);
                 const preview =
-                  session.messages?.[0]?.content||
+                  session.messages?.[0]?.content ||
                   session.draftText ||
                   "No messages yet";
-                  console.log("sdoinv"+preview);
+                console.log("sdoinv" + preview);
                 return (
                   <div
                     key={session.sessionId}
