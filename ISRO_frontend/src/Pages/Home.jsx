@@ -141,7 +141,7 @@ function Home() {
                   darkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-                Missiosjrbn-Ready Features
+                Mission-Ready Features
               </h2>
               <p
                 className={`text-xl ${
