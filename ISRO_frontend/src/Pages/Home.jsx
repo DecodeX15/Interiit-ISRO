@@ -5,7 +5,7 @@ import StarField from '../Components/ui/StarField.jsx';
 import { TypingAnimation } from "../Components/ui/typing-animation.jsx"
 import { useTheme } from "../Context/theme/Themecontext";
 import TextType from '../Components/ui/TextType.jsx';
-
+import { AnimatedList } from '../Components/ui/animated-list.jsx';
 function Home() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -107,7 +107,8 @@ const {darkMode, toggleTheme} = useTheme();
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          {/* <div className="grid md:grid-cols-3 gap-8"> */}
+            <AnimatedList className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
             <FloatingElement delay={0}>
               <div className={`group p-8 rounded-3xl transition-all duration-300 ${
@@ -170,7 +171,8 @@ const {darkMode, toggleTheme} = useTheme();
                 </p>
               </div>
             </FloatingElement>
-          </div>
+            </AnimatedList> 
+          {/* </div> */}
         </div>
       </section>
 
