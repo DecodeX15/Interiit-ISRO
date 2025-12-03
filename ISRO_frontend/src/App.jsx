@@ -7,26 +7,26 @@ import Dashboard from "./Pages/Dashboard.jsx";
 import Footer from "./Components/Footer.jsx";
 import Themeprovider from "./Context/theme/Themeprovider.jsx";
 import StarField from "./Components/ui/StarField";
+import ErrorPage from "../src/Components/Error.jsx"; // <--- ADD THIS
 
 export default function App() {
   return (
     <div className="w-screen h-screen bg-white dark:bg-[#0d0d0f] transition-colors duration-300 overflow-x-hidden scrollbar-hide">
       <Themeprovider>
+        <div>
+          <BrowserRouter>
+            <StarField />
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="*" element={<ErrorPage />} />
+            </Routes>
 
-      
-      <div>
-        <BrowserRouter>
-          <StarField/>
-         
-      <Navbar />  
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-    <Footer/>
-        </BrowserRouter>
-      </div>
+            <Footer />
+          </BrowserRouter>
+        </div>
       </Themeprovider>
     </div>
   );

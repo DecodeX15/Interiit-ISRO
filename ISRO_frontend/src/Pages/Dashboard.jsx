@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
-  Moon,
-  Sun,
-  MessageSquare,
   Plus,
-  Rocket,
   Search,
   Trash2,
   Calendar,
   Satellite,
-  Globe,
-  Sparkles,
-  ChevronDown,
-  Zap,
-  Shield,
-  Database,
+  ClockFading,
 } from "lucide-react";
-import StarField from "../Components/ui/StarField.jsx";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../Context/theme/Themecontext";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
@@ -26,100 +16,206 @@ const Dashboard = () => {
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
 
-  // TEMP LOCAL chats (your teammate’s version)
-  const [chats, setChats] = useState([
-    {
-      id: 1,
-      title: "Urban Development Analysis",
-      date: "2024-11-28",
-      time: "14:30",
-      preview:
-        "Analyzed satellite imagery of urban sprawl in Mumbai region. Identified key infrastructure developments and building density patterns.",
-      image: "satellite",
-      tags: ["Urban", "Infrastructure"],
-    },
-    {
-      id: 2,
-      title: "Coastal Erosion Detection",
-      date: "2024-11-27",
-      time: "10:15",
-      preview:
-        "Detected changes in coastline patterns along Kerala coast. Measured erosion rates and identified vulnerable areas.",
-      image: "coastal",
-      tags: ["Coastal", "Erosion"],
-    },
-    {
-      id: 3,
-      title: "Agricultural Land Classification",
-      date: "2024-11-26",
-      time: "16:45",
-      preview:
-        "Classified agricultural lands in Punjab region. Identified crop types and estimated vegetation health indices.",
-      image: "agriculture",
-      tags: ["Agriculture", "NDVI"],
-    },
-    {
-      id: 4,
-      title: "Forest Cover Monitoring",
-      date: "2024-11-25",
-      time: "09:20",
-      preview:
-        "Monitored forest cover changes in Western Ghats. Detected deforestation patterns and biodiversity hotspots.",
-      image: "forest",
-      tags: ["Forest", "Conservation"],
-    },
-    {
-      id: 5,
-      title: "Water Body Detection",
-      date: "2024-11-24",
-      time: "11:30",
-      preview:
-        "Identified and mapped water bodies across Rajasthan. Tracked seasonal variations in reservoir levels.",
-      image: "water",
-      tags: ["Water", "Resources"],
-    },
-    {
-      id: 6,
-      title: "Disaster Assessment",
-      date: "2024-11-23",
-      time: "13:50",
-      preview:
-        "Post-disaster damage assessment of flood-affected areas. Quantified infrastructure damage and evacuation needs.",
-      image: "disaster",
-      tags: ["Disaster", "Emergency"],
-    },
-  ]);
+  const { darkMode } = useTheme();
 
-  const { darkMode, toggleTheme } = useTheme();
+  // State for search and filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [loading, setLoading] = useState(true);
 
-  // FIXED: you were using sessions.filter instead of chats.filter
-  const deleteChat = (id) => {
-    setChats(chats.filter((chat) => chat.id !== id));
+  // Simulate loading from localStorage for 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Function to handle chat click - navigate to chat with sessionId
+  const handleChatClick = (sessionId) => {
+    setActiveSessionId(sessionId);
+    navigate(`/chat`);
   };
 
-  const openChat = (id) => {
-    navigate(`/chat?id=${id}`);
+  // Function to handle delete
+  const handleDelete = (sessionId, e) => {
+    e.stopPropagation();
+    // Remove session from the sessions array
+    const updatedSessions = sessions.filter(
+      (session) => session.sessionId !== sessionId
+    );
+    setSessions(updatedSessions);
+
+    // If we're deleting the active session, clear activeSessionId
+    if (activeSessionId === sessionId) {
+      setActiveSessionId(null);
+    }
   };
 
-  const DashboardPage = () => (
+  // Format timestamp to readable date and time
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return { date: "", time: "" };
+    const date = new Date(Number(timestamp));
+    return {
+      date: date.toLocaleDateString("en-GB"), // DD/MM/YYYY format
+      time: date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+  };
+
+  // Filter sessions based on search and category
+  const filteredSessions = sessions.filter((session) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      session.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      session.messages?.some((msg) =>
+        msg.text?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    // Category filter
+    const matchesCategory =
+      selectedCategory === "All Categories" ||
+      (session.tags && session.tags.includes(selectedCategory));
+
+    return matchesSearch && matchesCategory;
+  });
+  console.log("aefoin")
+  console.log(filteredSessions);
+  // Extract tags from session
+  const getSessionTags = (session) => {
+    if (session.tags && Array.isArray(session.tags)) {
+      return session.tags;
+    }
+
+    const defaultTags = ["Analysis", "Satellite"];
+    const messageText = session.messages?.[0]?.text || "";
+
+    if (
+      messageText.toLowerCase().includes("urban") ||
+      messageText.toLowerCase().includes("city")
+    ) {
+      return ["Urban", ...defaultTags];
+    }
+    if (
+      messageText.toLowerCase().includes("agriculture") ||
+      messageText.toLowerCase().includes("crop")
+    ) {
+      return ["Agriculture", ...defaultTags];
+    }
+    if (
+      messageText.toLowerCase().includes("coastal") ||
+      messageText.toLowerCase().includes("coast")
+    ) {
+      return ["Coastal", ...defaultTags];
+    }
+    if (
+      messageText.toLowerCase().includes("forest") ||
+      messageText.toLowerCase().includes("tree")
+    ) {
+      return ["Forest", ...defaultTags];
+    }
+
+    return defaultTags;
+  };
+
+  // Skeleton Loader Component
+  const SkeletonCard = () => (
     <div
-      className={`relative flex flex-col min-h-screen h-auto overflow-y-auto transition-colors duration-500 ${
-        darkMode ? "bg-gray-900" : "bg-gray-300"
+      className={`p-6 rounded-2xl ${
+        darkMode ? "bg-gray-800" : "bg-gray-100"
+      } animate-pulse`}
+    >
+      <div className="flex items-start justify-between mb-5">
+        <div
+          className={`p-3 rounded-xl ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          }`}
+        >
+          <div className="w-6 h-6 rounded-full"></div>
+        </div>
+        <div className="p-2 rounded-lg">
+          <div className="w-5 h-5"></div>
+        </div>
+      </div>
+
+      <div className="mb-3">
+        <div
+          className={`h-6 rounded-lg ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-3/4`}
+        ></div>
+      </div>
+
+      <div className="mb-4">
+        <div
+          className={`h-4 rounded-lg ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-full mb-2`}
+        ></div>
+        <div
+          className={`h-4 rounded-lg ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-2/3`}
+        ></div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-5">
+        <div
+          className={`px-3 py-1 rounded-full ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-16 h-6`}
+        ></div>
+        <div
+          className={`px-3 py-1 rounded-full ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-20 h-6`}
+        ></div>
+      </div>
+
+      <div
+        className={`flex items-center justify-between pt-4 border-t ${
+          darkMode ? "border-gray-700" : "border-gray-300"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-4 h-4 rounded ${
+              darkMode ? "bg-gray-700" : "bg-gray-300"
+            }`}
+          ></div>
+          <div
+            className={`h-4 rounded-lg ${
+              darkMode ? "bg-gray-700" : "bg-gray-300"
+            } w-24`}
+          ></div>
+        </div>
+        <div
+          className={`h-4 rounded-lg ${
+            darkMode ? "bg-gray-700" : "bg-gray-300"
+          } w-12`}
+        ></div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div
+      className={`relative min-h-screen transition-colors duration-500 ${
+        darkMode ? "bg-gray-900" : "bg-gray-100"
       }`}
     >
-      <div className="relative min-h-screen flex flex-col max-w-7xl mx-auto px-6 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h2
-              className={`text-4xl font-extrabold tracking-tight ${
+            <h1
+              className={`text-3xl sm:text-4xl font-bold ${
                 darkMode ? "text-white" : "text-gray-900"
               }`}
             >
               Analysis History
-            </h2>
+            </h1>
             <p
-              className={`mt-2 text-lg ${
+              className={`mt-2 text-base sm:text-lg ${
                 darkMode ? "text-gray-400" : "text-gray-600"
               }`}
             >
@@ -128,23 +224,23 @@ const Dashboard = () => {
           </div>
 
           <button
-            onClick={() => navigate("/chat")}
-            className={`px-4 py-2  cursor-pointer text-sm transition-all rounded-xl shadow-md  font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
-            darkMode 
-              ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/30  border-orange-600/30' 
-              : 'bg-orange-100 text-orange-700 hover:bg-orange-200  border-orange-200'
-          }`}
+            onClick={() => {
+              setActiveSessionId(null);
+              navigate("/chat");
+            }}
+            className={`px-4 py-3 cursor-pointer text-sm transition-all rounded-xl shadow-md font-semibold flex items-center justify-center gap-2 hover:scale-105 active:scale-95 w-full sm:w-auto ${
+              darkMode
+                ? "bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 border border-orange-600/30"
+                : "bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200"
+            }`}
           >
-            
-            
-
-            <Plus className="w-5 h-5 relative z-10" />
-            <span className="relative z-10">New Analysis</span>
+            <Plus className="w-5 h-5" />
+            <span>New Analysis</span>
           </button>
         </div>
 
         {/* SEARCH + FILTER */}
-        <div className="mb-10 flex flex-col sm:flex-row gap-4">
+        <div className="mb-8 flex flex-col sm:flex-row gap-4">
           {/* Search Bar */}
           <div className="flex-1 relative">
             <Search
@@ -155,160 +251,212 @@ const Dashboard = () => {
             <input
               type="text"
               placeholder="Search analyses..."
-              className={`w-full pl-12 pr-4 py-4 rounded-xl text-base transition-all ${
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full pl-12 pr-4 py-3 rounded-xl text-base transition-all ${
                 darkMode
-                  ? "bg-gray-800 text-white placeholder-gray-400 border border-gray-700 focus:border-orange-500"
-                  : "bg-white text-gray-900 placeholder-gray-500 border border-gray-200 focus:border-orange-400"
-              } outline-none shadow-md`}
+                  ? "bg-gray-800 text-white placeholder-gray-400 border border-gray-700 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  : "bg-white text-gray-900 placeholder-gray-500 border border-gray-200 focus:border-orange-400 focus:ring-2 focus:ring-orange-400/20"
+              } outline-none shadow-sm`}
             />
           </div>
 
           {/* Category Filter */}
-          <select
-            className={`px-4 py-4 rounded-xl appearance-none text-base font-medium transition-all cursor-pointer shadow-md ${
-              darkMode
-                ? "bg-gray-800 text-white border border-gray-700 focus:border-blue-500"
-                : "bg-white text-gray-900 border border-gray-200 focus:border-blue-400"
-            }`}
-          >
-            <option>All Categories</option>
-            <option>Urban</option>
-            <option>Agriculture</option>
-            <option>Coastal</option>
-            <option>Forest</option>
-          </select>
+          <div className="relative w-full sm:w-auto ">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={`w-full px-8 py-3 rounded-xl appearance-none text-base font-medium transition-all cursor-pointer shadow-sm ${
+                darkMode
+                  ? "bg-gray-800  text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  : "bg-white text-gray-900 border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/20"
+              } outline-none`}
+            >
+              <option>All Categories</option>
+              <option>Urban</option>
+              <option>Agriculture</option>
+              <option>Coastal</option>
+              <option>Forest</option>
+              <option>Water</option>
+              <option>Disaster</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2">
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
 
-        {/* GRID OF ANALYSIS CARDS */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {chats.map((chat) => (
-            <div
-              key={chat.id}
-              className={`group relative p-6 rounded-2xl transition-all duration-300 cursor-pointer ${
-                darkMode
-                  ? "bg-gray-800 border border-gray-700 hover:border-orange-500/40"
-                  : "bg-white border border-gray-200 hover:border-orange-300"
-              } shadow-xl hover:shadow-2xl transform hover:-translate-y-2`}
-              onClick={() => openChat(chat.id)}
-            >
-              {/* CARD HEADER */}
-              <div className="flex items-start justify-between mb-5">
-                <div
-                  className={`p-3 rounded-xl shadow-inner ${
-                    darkMode
-                      ? "bg-linear-to-br from-orange-600/20 to-blue-600/20"
-                      : "bg-linear-to-br from-orange-100 to-blue-100"
-                  }`}
-                >
-                  <Satellite
-                    className={`w-6 h-6 ${
-                      darkMode ? "text-orange-400" : "text-orange-600"
-                    }`}
-                  />
-                </div>
-
-                {/* MERGED DELETE BUTTON */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteChat(chat.id);
-                  }}
-                  className={`opacity-0 group-hover:opacity-100 p-2 rounded-lg transition-all ${
-                    darkMode
-                      ? "hover:bg-red-900/30 text-red-400"
-                      : "hover:bg-red-50 text-red-500"
-                  }`}
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* TITLE */}
-              <h3
-                className={`text-xl font-bold mb-3 ${
-                  darkMode ? "text-white" : "text-gray-900"
-                }`}
-              >
-                {chat.title}
-              </h3>
-
-              {/* PREVIEW */}
-              <p
-                className={`text-sm mb-4 line-clamp-3 ${
-                  darkMode ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
-                {chat.preview}
-              </p>
-
-              {/* TAGS */}
-              <div className="flex flex-wrap gap-2 mb-5">
-                {chat.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+        {/* GRID OF ANALYSIS CARDS OR SKELETONS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading
+            ? // Show 6 skeleton loaders
+              Array.from({ length: sessions?.length }).map((_, index) => (
+                <SkeletonCard key={`skeleton-${index}`} />
+              ))
+            : // Show actual sessions
+              filteredSessions.map((session) => {
+                const { date, time } = formatTimestamp(
+                  session.createdAt || session.updatedAt
+                );
+                const tags = getSessionTags(session);
+                const preview =
+                  session.messages?.[0]?.content||
+                  session.draftText ||
+                  "No messages yet";
+                  console.log("sdoinv"+preview);
+                return (
+                  <div
+                    key={session.sessionId}
+                    className={`group relative p-6 rounded-2xl transition-all duration-300 cursor-pointer ${
                       darkMode
-                        ? "bg-blue-600/20 text-blue-300 border border-blue-500/30"
-                        : "bg-blue-100 text-blue-700 border border-blue-200"
-                    }`}
+                        ? "bg-gray-800 border border-gray-700 hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/10"
+                        : "bg-white border border-gray-200 hover:border-orange-300 hover:shadow-lg"
+                    } shadow-sm hover:shadow-xl hover:-translate-y-1`}
+                    onClick={() => handleChatClick(session)}
                   >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+                    {/* CARD HEADER */}
+                    <div className="flex items-start justify-between mb-6">
+                      {/* DELETE BUTTON */}
+                      <button
+                        onClick={(e) => handleDelete(session.sessionId, e)}
+                        className={`opacity-0 group-hover:opacity-100 p-2 rounded-lg transition-all ${
+                          darkMode
+                            ? "hover:bg-red-900/30 text-red-400"
+                            : "hover:bg-red-50 text-red-500"
+                        }`}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
 
-              {/* FOOTER */}
-              <div
-                className={`flex items-center justify-between pt-4 border-t ${
-                  darkMode ? "border-gray-700" : "border-gray-200"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Calendar
-                    className={`w-4 h-4 ${
-                      darkMode ? "text-gray-500" : "text-gray-400"
-                    }`}
-                  />
-                  <span
-                    className={`text-sm ${
-                      darkMode ? "text-gray-500" : "text-gray-500"
-                    }`}
-                  >
-                    {chat.date}
-                  </span>
-                </div>
-                <span
-                  className={`text-sm font-medium ${
-                    darkMode ? "text-gray-500" : "text-gray-500"
-                  }`}
-                >
-                  {chat.time}
-                </span>
-              </div>
-            </div>
-          ))}
+                    {/* TITLE */}
+                    <h3
+                      className={`text-xl font-bold mb-3 line-clamp-1 ${
+                        darkMode ? "text-white" : "text-gray-900"
+                      }`}
+                    >
+                      {session.name ||
+                        `Analysis ${session.sessionId?.slice(0, 8) || "New"}`}
+                    </h3>
+
+                    {/* PREVIEW */}
+                    <p
+                      className={`text-sm mb-4 line-clamp-3 ${
+                        darkMode ? "text-gray-300" : "text-gray-600"
+                      }`}
+                    >
+                      {preview}
+                    </p>
+
+                    {/* TAGS */}
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            darkMode
+                              ? "bg-blue-600/20 text-blue-300 border border-blue-500/30"
+                              : "bg-blue-100 text-blue-700 border border-blue-200"
+                          }`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {session.unreadCount > 0 && (
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            darkMode
+                              ? "bg-red-600/20 text-red-300 border border-red-500/30"
+                              : "bg-red-100 text-red-700 border border-red-200"
+                          }`}
+                        >
+                          {session.unreadCount} new
+                        </span>
+                      )}
+                    </div>
+
+                    {/* FOOTER */}
+                    <div
+                      className={`flex items-center justify-between pt-4 border-t ${
+                        darkMode ? "border-gray-700" : "border-gray-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Calendar
+                          className={`w-4 h-4 ${
+                            darkMode ? "text-gray-500" : "text-gray-400"
+                          }`}
+                        />
+                        <span
+                          className={`text-sm ${
+                            darkMode ? "text-gray-400" : "text-gray-500"
+                          }`}
+                        >
+                          {date || "Date not available"}
+                        </span>
+                      </div>
+                      <span
+                        className={`text-sm font-medium ${
+                          darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
+                      >
+                        {time || "Time not available"}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
         </div>
 
         {/* EMPTY STATE */}
-        {chats.length === 0 && (
+        {!loading && filteredSessions.length === 0 && (
           <div
-            className={`text-center py-24 ${
-              darkMode ? "text-gray-400" : "text-gray-500"
+            className={`text-center py-16 rounded-2xl ${
+              darkMode ? "bg-gray-800/50" : "bg-white/50"
             }`}
           >
-            <Satellite className="w-20 h-20 mx-auto mb-6 opacity-40" />
-            <h3 className="text-3xl font-bold mb-3">No analyses yet</h3>
-            <p className="text-lg mb-6">
-              Start your first satellite imagery analysis
+            <Satellite className="w-16 h-16 mx-auto mb-4 opacity-40" />
+            <h3
+              className={`text-2xl font-bold mb-2 ${
+                darkMode ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
+              {sessions.length === 0
+                ? "No analyses yet"
+                : "No matching analyses"}
+            </h3>
+            <p
+              className={`text-lg mb-6 ${
+                darkMode ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
+              {sessions.length === 0
+                ? "Start your first satellite imagery analysis"
+                : "Try a different search or category"}
             </p>
 
             <button
-              onClick={() => navigate("/chat")}
-              className={`px-8 py-4 text-lg font-semibold rounded-xl transition-all shadow-xl ${
+              onClick={() => {
+                setActiveSessionId(null);
+                navigate("/chat");
+              }}
+              className={`px-6 py-3 text-base font-semibold rounded-xl transition-all ${
                 darkMode
-                  ? "bg-linear-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700"
-                  : "bg-linear-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
-              } text-white transform hover:scale-105`}
+                  ? "bg-gradient-to-r from-orange-600 to-blue-600 hover:from-orange-700 hover:to-blue-700"
+                  : "bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600"
+              } text-white hover:shadow-lg`}
             >
               Start Analysis
             </button>
@@ -316,13 +464,6 @@ const Dashboard = () => {
         )}
       </div>
     </div>
-  );
-
-  return (
-    <>
-      {/* <StarField /> */}
-      <DashboardPage />
-    </>
   );
 };
 

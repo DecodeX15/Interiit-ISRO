@@ -10,6 +10,7 @@ import { useTheme } from "../Context/theme/Themecontext";
 import TextType from "../Components/ui/TextType.jsx";
 import StyleSlider from "../Components/Style_slider.jsx";
 import { AnimatedList, AnimatedListItem } from "../Components/ui/animated-list.jsx";
+import { LayoutTextFlipDemo } from "../Components/LayoutTextFlipDemo.jsx";
 function Home() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -61,7 +62,7 @@ function Home() {
                   darkMode ? "text-white" : "text-gray-900"
                 }`}
               >
-                A picture worth
+                <LayoutTextFlipDemo/>
                 <span className="block mt-2 text-orange-500">
                   {/* <TypingAnimation>
                 a Thousand Words
