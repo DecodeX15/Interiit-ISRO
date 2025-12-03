@@ -129,7 +129,7 @@ const Dashboard = () => {
 
           <button
             onClick={() => navigate("/chat")}
-            className={`px-4 py-2 text-sm transition-all rounded-xl shadow-md  font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
+            className={`px-4 py-2  cursor-pointer text-sm transition-all rounded-xl shadow-md  font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
             darkMode 
               ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/30  border-orange-600/30' 
               : 'bg-orange-100 text-orange-700 hover:bg-orange-200  border-orange-200'

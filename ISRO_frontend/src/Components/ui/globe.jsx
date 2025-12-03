@@ -1,14 +1,11 @@
 import { useEffect, useRef } from "react"
-import createGlobe from "cobe";
+import createGlobe from "cobe"
 import { useMotionValue, useSpring } from "motion/react"
-
 import { cn } from "../../lib/utils"
 
 const MOVEMENT_DAMPING = 1400
 
 const GLOBE_CONFIG = {
-  width: 800,
-  height: 800,
   onRender: () => {},
   devicePixelRatio: 2,
   phi: 0,
@@ -34,15 +31,12 @@ const GLOBE_CONFIG = {
   ],
 }
 
-export function Globee({
-  className,
-  config = GLOBE_CONFIG
-}) {
+export function Globee({ className, config = GLOBE_CONFIG }) {
   let phi = 0
   let width = 0
+
   const canvasRef = useRef(null)
   const pointerInteracting = useRef(null)
-  const pointerInteractionMovement = useRef(0)
 
   const r = useMotionValue(0)
   const rs = useSpring(r, {
@@ -51,17 +45,16 @@ export function Globee({
     stiffness: 100,
   })
 
-  const updatePointerInteraction = (value) => {
+  const onPointerUpdate = (value) => {
     pointerInteracting.current = value
     if (canvasRef.current) {
       canvasRef.current.style.cursor = value !== null ? "grabbing" : "grab"
     }
   }
 
-  const updateMovement = (clientX) => {
+  const onMove = (clientX) => {
     if (pointerInteracting.current !== null) {
       const delta = clientX - pointerInteracting.current
-      pointerInteractionMovement.current = delta
       r.set(r.get() + delta / MOVEMENT_DAMPING)
     }
   }
@@ -78,41 +71,42 @@ export function Globee({
 
     const globe = createGlobe(canvasRef.current, {
       ...config,
-      width: width * 2,
-      height: width * 2,
+      width: width,
+      height: width, // Square globe — no clipping!
       onRender: (state) => {
         if (!pointerInteracting.current) phi += 0.005
         state.phi = phi + rs.get()
-        state.width = width * 2
-        state.height = width * 2
+        state.width = width
+        state.height = width
       },
     })
 
-    setTimeout(() => (canvasRef.current.style.opacity = "1"), 0)
+    setTimeout(() => {
+      if (canvasRef.current) canvasRef.current.style.opacity = "1"
+    }, 0)
+
     return () => {
       globe.destroy()
       window.removeEventListener("resize", onResize)
-    };
+    }
   }, [rs, config])
 
   return (
     <div
-      className={cn("absolute inset-0 mx-auto aspect-[1/1] w-full max-w-[600px]", className)}>
+      className={cn(
+        "relative mx-auto w-full flex items-center ",
+        className
+      )}
+    >
       <canvas
-        className={cn(
-          "size-full opacity-0 transition-opacity duration-500 [contain:layout_paint_size]"
-        )}
         ref={canvasRef}
-        onPointerDown={(e) => {
-          pointerInteracting.current = e.clientX
-          updatePointerInteraction(e.clientX)
-        }}
-        onPointerUp={() => updatePointerInteraction(null)}
-        onPointerOut={() => updatePointerInteraction(null)}
-        onMouseMove={(e) => updateMovement(e.clientX)}
-        onTouchMove={(e) =>
-          e.touches[0] && updateMovement(e.touches[0].clientX)
-        } />
+        className="w-full h-full opacity-0 transition-opacity duration-500"
+        onPointerDown={(e) => onPointerUpdate(e.clientX)}
+        onPointerUp={() => onPointerUpdate(null)}
+        onPointerOut={() => onPointerUpdate(null)}
+        onMouseMove={(e) => onMove(e.clientX)}
+        onTouchMove={(e) => e.touches[0] && onMove(e.touches[0].clientX)}
+      />
     </div>
-  );
+  )
 }

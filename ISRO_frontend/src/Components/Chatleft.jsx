@@ -74,7 +74,7 @@ export default function ChatLeft() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className={`px-4 py-2 text-sm transition-all rounded-xl shadow-md hover:shadow-lg font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
+          className={`px-4 py-2 text-sm  cursor-pointer transition-all rounded-xl shadow-md hover:shadow-lg font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
             darkMode 
               ? 'bg-orange-600/20 text-orange-400 hover:bg-orange-600/30 border border-orange-600/30' 
               : 'bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200'
