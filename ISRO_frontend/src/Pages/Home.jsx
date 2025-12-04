@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Globe,
-  Info,
-  MessageSquare,
-  Rocket,
-  Sparkles,
-} from "lucide-react";
+import { Globe, Info, MessageSquare, Rocket, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import StarField from "../Components/ui/StarField.jsx";
 import { TypingAnimation } from "../Components/ui/typing-animation.jsx";
@@ -29,8 +23,6 @@ function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  
 
   return (
     <>
