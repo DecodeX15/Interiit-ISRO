@@ -20,7 +20,7 @@ export function HeroHighlightDemo({ text, hightext }) {
           duration: 0.5,
           ease: [0.4, 0.0, 0.2, 1],
         }}
-        className={`text-3xl px-4 font-bold ${
+        className={`text-2xl px-4 font-bold ${
           !darkMode ? "text-black" : "text-white"
         } max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto`}
       >
