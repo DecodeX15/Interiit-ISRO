@@ -5,30 +5,21 @@ import { GlobeeLight } from "../Components/ui/globe-light";
 import { useTheme } from "../Context/theme/Themecontext.jsx";
 import { Info, Globe, MessageSquare } from "lucide-react";
 
-const FEATURES = (darkMode) => [
+const FEATURES = [
   {
-    iconBg: darkMode ? "bg-blue-600" : "bg-blue-500",
     icon: <Info className="w-8 h-8 text-white" />,
     title: "Precise Satellite Captioning",
     text: "Get a concise, accurate description summarizing the local and global attributes of small and large objects in the satellite image.",
-    hoverFrom: darkMode ? "from-blue-900/50" : "from-blue-50",
-    borderHover: darkMode ? "hover:border-blue-500" : "hover:border-blue-300",
   },
   {
-    iconBg: darkMode ? "bg-purple-600" : "bg-purple-500",
     icon: <Globe className="w-8 h-8 text-white" />,
     title: "Visual Object Grounding",
     text: "Accurately localize objects based on a query. Enhance detection reliability by maintaining consistent precision even under dynamic or noisy input conditions.",
-    hoverFrom: darkMode ? "from-purple-900/50" : "from-purple-50",
-    borderHover: darkMode ? "hover:border-purple-500" : "hover:border-purple-300",
   },
   {
-    iconBg: darkMode ? "bg-pink-600" : "bg-pink-500",
     icon: <MessageSquare className="w-8 h-8 text-white" />,
     title: "Geospatial Visual Question Answering (VQA)",
     text: "Provide accurate answers to binary, numeric, and semantic queries about the image.",
-    hoverFrom: darkMode ? "from-pink-900/50" : "from-pink-50",
-    borderHover: darkMode ? "hover:border-pink-500" : "hover:border-pink-300",
   },
 ];
 
@@ -92,24 +83,56 @@ export default function RunpodStyleSlider() {
     >
       {/* Get current feature */}
       {(() => {
-        const f = FEATURES(darkMode)[index];
+        const f = FEATURES[index];
 
         return (
           <FloatingElement delay={0} duration={3}>
             <div
               className={`group p-8 rounded-3xl transition-all duration-300
                 ${darkMode 
-                  ? `bg-linear-to-br from-gray-800 to-gray-900 hover:${f.hoverFrom} hover:to-gray-900`
-                  : `bg-linear-to-br from-white to-gray-50 hover:${f.hoverFrom} hover:to-white`
+                  ? `bg-linear-to-br from-gray-800 to-gray-900
+                   ${index === 0 ? "hover:from-blue-900/50" : ""}
+                    ${index === 1 ? "hover:from-purple-900/50" : ""}
+                    ${index === 2 ? "hover:from-pink-900/50" : ""}
+                    hover:to-gray-900`
+                  : `bg-linear-to-br from-white to-gray-50 
+                  ${index === 0 ? "hover:from-blue-50" : ""}
+                    ${index === 1 ? "hover:from-purple-50" : ""}
+                    ${index === 2 ? "hover:from-pink-50" : ""}
+                   hover:to-white`
                 } 
                 border-2 ${
                   darkMode ? "border-gray-700" : "border-gray-200"
-                } ${f.borderHover}
+                } 
+                ${
+                    index === 0
+                      ? darkMode
+                        ? "border-gray-700 hover:border-blue-500"
+                        : "border-gray-200 hover:border-blue-300"
+                      : index === 1
+                      ? darkMode
+                        ? "border-gray-700 hover:border-purple-500"
+                        : "border-gray-200 hover:border-purple-300"
+                      : index === 2
+                      ? darkMode
+                        ? "border-gray-700 hover:border-pink-500"
+                        : "border-gray-200 hover:border-pink-300"
+                      : ""
+                  }
                 shadow-xl transform hover:scale-105 hover:-translate-y-2`}
             >
               <div
                 className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 
-                  ${f.iconBg} shadow-lg group-hover:shadow-2xl transition-shadow`}
+                   ${
+                      index === 0
+                        ? darkMode ? "bg-blue-600" : "bg-blue-500"
+                        : index === 1
+                        ? darkMode ? "bg-purple-600" : "bg-purple-500"
+                        : index === 2
+                        ? darkMode ? "bg-pink-600" : "bg-pink-500"
+                        : ""
+                    }
+                  shadow-lg group-hover:shadow-2xl transition-shadow`}
               >
                 {f.icon}
               </div>
@@ -148,7 +171,7 @@ export default function RunpodStyleSlider() {
         </div>
 
         <div className="flex items-center gap-2">
-          {FEATURES(darkMode).map((_, i) => (
+          {FEATURES.map((_, i) => (
             <button
               key={i}
               onClick={() => setIndex(i)}
@@ -163,8 +186,6 @@ export default function RunpodStyleSlider() {
         </div>
       </div>
 </div>
-
-
       {/* RIGHT SIDE - GLOBE */}
       <div className="w-1/2 flex items-center justify-center h-[350px]">
         <AnimatePresence mode="wait">
