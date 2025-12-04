@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2,ArrowLeftFromLine,ArrowRightFromLine } from "lucide-react";
 import { v4 as uuid } from "uuid";
 import { useTheme } from "../Context/theme/Themecontext.jsx";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
@@ -27,9 +27,8 @@ function createNewSession(chatName) {
   };
 }
 
-export default function ChatLeft() {
+export default function ChatLeft({ sidebarOpen, setSidebarOpen }) {
   const { darkMode } = useTheme();
-
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
 
@@ -57,7 +56,6 @@ export default function ChatLeft() {
   const handleDelete = (e, sessionId) => {
     e.stopPropagation(); // Prevent triggering the session click
 
-    // if (window.confirm("Are you sure you want to delete this chat?")) {
     const updatedSessions = sessions.filter((s) => s.sessionId !== sessionId);
     setSessions(updatedSessions);
     localStorage.setItem("GeoNLI_Sessions", JSON.stringify(updatedSessions));
@@ -68,9 +66,13 @@ export default function ChatLeft() {
     }
     // }
   };
-
+  
+  
   return (
-    <div
+    <>
+    {
+      sidebarOpen? (
+        <div
       className={`h-full flex flex-col transition-colors duration-300 ${
         darkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200"
       }`}
@@ -100,7 +102,17 @@ export default function ChatLeft() {
           }`}
         >
           <Plus className="w-4 h-4" />
-          New
+        </button>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(false)}
+          className={`px-4 py-2 text-sm  cursor-pointer transition-all rounded-xl shadow-md hover:shadow-lg font-semibold flex items-center gap-2 transform hover:scale-105 active:scale-95 ${
+            darkMode
+              ? "bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-600/30"
+              : "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200"
+          }`}
+        >
+            <ArrowLeftFromLine  className="w-4 h-4" />
         </button>
       </div>
 
@@ -170,8 +182,8 @@ export default function ChatLeft() {
 
                   {/* Delete Button */}
                   <AlertDialog>
-                    <AlertDialogTrigger>
-                      <button
+                    <AlertDialogTrigger
+                      // <button
                         type="button"
                         className={`opacity-0 group-hover:opacity-100 p-2 rounded-lg transition-all shrink-0 ${
                           darkMode
@@ -181,7 +193,7 @@ export default function ChatLeft() {
                         title="Delete chat"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </button>
+                      {/* </button> */}
                     </AlertDialogTrigger>
                     <AlertDialogContent className="bg-gray-900 borderborder-gray-700 shadow-xl rounded-xl ring-2ring-orange-500/20">
                       <AlertDialogHeader>
@@ -207,7 +219,51 @@ export default function ChatLeft() {
         )}
       </div>
 
-      {/* Modal */}
+      
+    </div>
+      ):(
+
+       <div className="flex flex-col gap-3 items-center">
+  {/* ADD BUTTON */}
+  <button
+    type="button"
+    onClick={() => setOpen(true)}
+    className={`
+      group flex items-center justify-center gap-2
+      px-4 py-2 text-sm font-semibold rounded-xl cursor-pointer
+      transition-all duration-200 ease-out shadow-sm
+      hover:shadow-md hover:-translate-y-0.5 active:scale-95
+      ${darkMode
+        ? "bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/25"
+        : "bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-200"
+      }
+    `}
+  >
+    <Plus className="w-4 h-4" />
+  </button>
+
+  {/* SIDEBAR BUTTON */}
+  <button
+    type="button"
+    onClick={() => setSidebarOpen(true)}
+    className={`
+      group flex items-center justify-center gap-2
+      px-4 py-2 text-sm font-semibold rounded-xl cursor-pointer
+      transition-all duration-200 ease-out shadow-sm
+      hover:shadow-md hover:-translate-y-0.5 active:scale-95
+      ${darkMode
+        ? "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/25"
+        : "bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200"
+      }
+    `}
+  >
+    <ArrowRightFromLine className="w-4 h-4" />
+  </button>
+</div>
+
+      )
+    }
+    {/* Modal */}
       {open && (
         <div className="fixed inset-0 flex items-center justify-center z-999">
           <div
@@ -287,6 +343,7 @@ export default function ChatLeft() {
           </div>
         </div>
       )}
-    </div>
+    </>
+    
   );
 }

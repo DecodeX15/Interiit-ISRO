@@ -1,40 +1,40 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Play, Copy, Download, CheckCircle, XCircle, Clock, FileJson, Image, AlertCircle } from 'lucide-react';
 import { useTheme } from "../Context/theme/Themecontext";
-const ChatEvalMode = () => {
+const ChatEvalModeee = () => {
   const [jsonInput, setJsonInput] = useState(`
-   {
-    "input_image": {
-      "image_id": "sample2.png",
-      "image_url": "https://bit.ly/4oYfvr0",
-      "metadata": {
-          "width": 512,
-          "height": 512,
-          "spatial_resolution_m": 1.57
-  }
-      },
-      "queries": {
-          "caption_query": {
-              "instruction": "Generate a detailed caption describing all visible elements in the satellite image, including object types, counts, relative locations, and overall scene context."
-          },
-          "grounding_query": {
-              "instruction": "Locate and return oriented bounding boxes for the ground track field seen in the image."
-          },
-          "attribute_query": {
-              "binary": {
-                  "instruction": "Is there any aeroplane in the scene?"
-              },
-              "numeric": {
-                  "instruction": "What is the area of the blue region in the larger swimming pool in meters square?"
-              },
-              "semantic": {
-                  "instruction": "What is the color of the building on the top right side of the larger swimming pool?"
-              }
-          }
-      }
-  }
-    `);
-  const [copied, setCopied] = useState(false);
+ {
+	"input_image": {
+    "image_id": "sample2.png",
+    "image_url": "https://bit.ly/4oYfvr0",
+    "metadata": {
+        "width": 512,
+        "height": 512,
+        "spatial_resolution_m": 1.57
+}
+    },
+    "queries": {
+        "caption_query": {
+            "instruction": "Generate a detailed caption describing all visible elements in the satellite image, including object types, counts, relative locations, and overall scene context."
+        },
+        "grounding_query": {
+            "instruction": "Locate and return oriented bounding boxes for the ground track field seen in the image."
+        },
+        "attribute_query": {
+            "binary": {
+                "instruction": "Is there any aeroplane in the scene?"
+            },
+            "numeric": {
+                "instruction": "What is the area of the blue region in the larger swimming pool in meters square?"
+            },
+            "semantic": {
+                "instruction": "What is the color of the building on the top right side of the larger swimming pool?"
+            }
+        }
+    }
+}
+  `);
+    const [copied, setCopied] = useState(false);
   const {darkMode} = useTheme();
   const [jsonOutput, setJsonOutput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -65,6 +65,7 @@ const ChatEvalMode = () => {
           body: JSON.stringify(input),
         });
         const outputJson=await response.json()
+        console.log(outputJson)
       setJsonOutput(JSON.stringify(outputJson, null, 2));
       // Extract bounding boxes
       const boxes = Object.values(outputJson.queries.grounding_query.response).map(box => ({
@@ -123,13 +124,13 @@ const ChatEvalMode = () => {
       ctx.strokeRect(-width / 2, -height / 2, width, height);
       
       // Label background
-      ctx.fillStyle = color;
-      ctx.fillRect(-width / 2, -height / 2 - 25, 80, 25);
+    //   ctx.fillStyle = color;
+    //   ctx.fillRect(-width / 2, -height / 2 - 25, 80, 25);
       
-      // Label text
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 14px sans-serif';
-      ctx.fillText(`${box.label} #${box.id}`, -width / 2 + 5, -height / 2 - 8);
+    //   // Label text
+    //   ctx.fillStyle = 'white';
+    //   ctx.font = 'bold 14px sans-serif';
+    //   ctx.fillText(`${box.label} #${box.id}`, -width / 2 + 5, -height / 2 - 8);
       
       ctx.restore();
     });
@@ -169,20 +170,20 @@ const ChatEvalMode = () => {
     a.click();
   };
 
-   return (
+  return (
     <div className={`flex-1 p-6 ${darkMode ? 'bg-gray-900' : 'bg-gray-200'}`}>
-      <div className="max-w-[1800px] h-[calc(100vh-150px)] mx-auto flex flex-col">
+      <div className="max-w-[1800px] mx-auto h-full">
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
           
           {/* LEFT PANEL - Input & Output JSON */}
-          <div className="flex flex-col gap-6 overflow-hidden">
+          <div className="flex flex-col gap-6">
             
             {/* INPUT JSON Section */}
             <div className={`rounded-2xl border-2 ${
               darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-200 border-gray-200'
-            } shadow-xl overflow-hidden flex flex-col flex-1`}>
-              <div className={`px-6 py-4 border-b flex items-center justify-between shrink-0 ${
+            } shadow-xl overflow-visible flex-1`}>
+              <div className={`px-6 py-4 border-b flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
               }`}>
                 <div className="flex items-center gap-3">
@@ -201,7 +202,7 @@ const ChatEvalMode = () => {
                   </div>
                 </div>
 
-                <label className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all shrink-0 ${
+                <label className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-all ${
                   darkMode 
                     ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
@@ -217,11 +218,11 @@ const ChatEvalMode = () => {
                 </label>
               </div>
 
-              <div className="p-4 flex-1 overflow-hidden flex flex-col">
+              <div className="p-4">
                 <textarea
                   value={jsonInput}
                   onChange={(e) => setJsonInput(e.target.value)}
-                  className={`w-full flex-1 px-4 py-3 rounded-xl font-mono text-sm resize-none overflow-y-auto ${
+                  className={`w-full h-[400px] px-4 py-3 rounded-xl font-mono text-sm resize-none ${
                     darkMode 
                       ? 'bg-gray-900 text-gray-100 border-2 border-gray-700' 
                       : 'bg-gray-50 text-gray-900 border-2 border-gray-200'
@@ -230,7 +231,7 @@ const ChatEvalMode = () => {
                 />
               </div>
 
-              <div className={`px-6 py-4 border-t shrink-0 ${
+              <div className={`px-6 py-4 border-t ${
                 darkMode ? 'border-gray-700' : 'border-gray-200'
               }`}>
                 <button
@@ -241,7 +242,7 @@ const ChatEvalMode = () => {
                       ? darkMode 
                         ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                         : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                      : 'bg-orange-600 text-white font-bold rounded shadow-lg hover:bg-orange-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-colors'
+                      : 'px-4 py-2 bg-orange-600 text-white font-bold rounded shadow-lg hover:bg-orange-700 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-transform transition-colors'
                   }`}
                 >
                   {isProcessing ? (
@@ -259,27 +260,24 @@ const ChatEvalMode = () => {
               </div>
             </div>
 
-          </div>
-
-          {/* RIGHT PANEL - Output */}
             {/* OUTPUT JSON Section */}
             <div className={`rounded-2xl border-2 ${
               darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-200 border-gray-200'
-            } shadow-xl overflow-hidden flex flex-col flex-1`}>
-              <div className={`px-6 py-4 border-b flex items-center justify-between shrink-0 ${
+            } shadow-xl overflow-hidden flex-1`}>
+              <div className={`px-6 py-4 border-b flex items-center justify-between ${
                 darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
               }`}>
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`p-2 rounded-lg shrink-0 ${
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-lg ${
                     darkMode ? 'bg-blue-600/20' : 'bg-blue-100'
                   }`}>
                     <FileJson className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                   </div>
-                  <div className="min-w-0">
+                  <div>
                     <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                       Output Response (JSON)
                     </h3>
-                    <div className="flex items-center gap-4 mt-1 flex-wrap">
+                    <div className="flex items-center gap-4 mt-1">
                       {status === 'success' && (
                         <span className="flex items-center gap-1 text-sm text-green-500">
                           <CheckCircle className="w-4 h-4" />
@@ -305,21 +303,29 @@ const ChatEvalMode = () => {
                 </div>
 
                 {jsonOutput && (
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex gap-2">
                     <button
                       onClick={copyToClipboard}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                         darkMode 
                           ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
                       }`}
                     >
                       <Copy className="w-4 h-4" />
-                      <span className="text-sm font-medium">{copied ? 'Copied' : 'Copy'}</span>
+                      {!copied?(
+
+                          <span className="text-sm font-medium">Copy</span>
+                      ):
+                      (
+
+                          <span className="text-sm font-medium">Copied</span>
+                      )
+                    }
                     </button>
                     <button
                       onClick={exportReport}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                         darkMode 
                           ? 'bg-gray-700 hover:bg-gray-600 text-white' 
                           : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
@@ -332,9 +338,9 @@ const ChatEvalMode = () => {
                 )}
               </div>
 
-              <div className="p-4 flex-1 overflow-hidden flex flex-col">
+              <div className="p-4">
                 {jsonOutput ? (
-                  <pre className={`w-full flex-1 px-4 py-3 rounded-xl font-mono text-sm overflow-auto ${
+                  <pre className={`w-full h-[400px] px-4 py-3 rounded-xl font-mono text-sm overflow-auto ${
                     darkMode 
                       ? 'bg-gray-900 text-gray-100 border-2 border-gray-700' 
                       : 'bg-gray-50 text-gray-900 border-2 border-gray-200'
@@ -342,8 +348,8 @@ const ChatEvalMode = () => {
                     {jsonOutput}
                   </pre>
                 ) : (
-                  <div className={`w-full flex-1 flex items-center justify-center rounded-xl border-2 border-dashed ${
-                    darkMode ? 'border-gray-700 bg-gray-900/50' : 'border-gray-300 bg-gray-50'
+                  <div className={`w-full h-[400px] flex items-center justify-center rounded-xl border-2 border-dashed ${
+                    darkMode ? 'border-gray-700' : 'border-gray-300'
                   }`}>
                     <div className="text-center">
                       <AlertCircle className={`w-12 h-12 mx-auto mb-3 ${
@@ -357,10 +363,105 @@ const ChatEvalMode = () => {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* RIGHT PANEL - Visual Output */}
+          <div className={`rounded-2xl border-2 ${
+            darkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-200 border-gray-200'
+          } shadow-xl overflow-hidden flex flex-col`}>
+            <div className={`px-6 py-4 border-b ${
+              darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+            }`}>
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${
+                  darkMode ? 'bg-blue-600/20' : 'bg-blue-100'
+                }`}>
+                  <Image className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+                </div>
+                <div>
+                  <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    Visual Output
+                  </h3>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Image with annotated bounding boxes
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex-1 p-6 overflow-auto">
+              {imageUrl || boundingBoxes.length > 0 ? (
+                <div className={`relative rounded-xl overflow-hidden border-2 ${
+                  darkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <img
+                    ref={imageRef}
+                    src={imageUrl}
+                    alt="Satellite imagery"
+                    className="w-full h-auto"
+                    onLoad={handleImageLoad}
+                  />
+                  <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full"
+                  />
+                </div>
+              ) : (
+                <div className={`w-full h-full flex items-center justify-center rounded-xl border-2 border-dashed ${
+                  darkMode ? 'border-gray-700 bg-gray-900/50' : 'border-gray-300 bg-gray-50'
+                }`}>
+                  <div className="text-center">
+                    <Image className={`w-16 h-16 mx-auto mb-4 ${
+                      darkMode ? 'text-gray-600' : 'text-gray-400'
+                    }`} />
+                    <p className={`text-lg font-semibold ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      No Image Loaded
+                    </p>
+                    <p className={`text-sm mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Execute evaluation to see annotated results
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {boundingBoxes.length > 0 && (
+              <div className={`px-6 py-4 border-t ${
+                darkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+              }`}>
+                <h4 className={`text-sm font-semibold mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  Detected Objects ({boundingBoxes.length})
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {boundingBoxes.map((box, idx) => {
+                    const colors = ['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+                    const color = colors[idx % colors.length];
+                    return (
+                      <span
+                        key={idx}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium"
+                        style={{ 
+                          backgroundColor: `${color}20`,
+                          border: `2px solid ${color}`,
+                          color: darkMode ? '#fff' : '#000'
+                        }}
+                      >
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                        {/* {box.label} #{box.id} */}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default ChatEvalMode;
+export default ChatEvalModeee;

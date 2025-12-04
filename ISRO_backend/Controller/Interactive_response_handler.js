@@ -3,8 +3,6 @@ import axios from "axios";
 const Interactive_response_handler = async (req, res) => {
   try {
     const { input_image, queries } = req.body;
-
-    // ---------------- VALIDATION ---------------- //
     if (!input_image || !queries) {
       return res.status(400).json({
         error: "input_image and queries are required",
@@ -28,7 +26,7 @@ const Interactive_response_handler = async (req, res) => {
       });
     }
 
-    // If attribute query exists → validate subqueries
+    // If attribute query exists then validate subqueries
     if (queries.attribute_query) {
       const attr = queries.attribute_query;
       if (!attr.binary && !attr.numeric && !attr.semantic) {
@@ -38,8 +36,6 @@ const Interactive_response_handler = async (req, res) => {
         });
       }
     }
-
-    // ---------------- ENV CHECK ---------------- //
     const MODEL_URL = process.env.ML_MODEL_ENDPOINT;
     if (!MODEL_URL) {
       return res.status(500).json({
@@ -47,7 +43,6 @@ const Interactive_response_handler = async (req, res) => {
       });
     }
 
-    // ---------------- PAYLOAD FOR MODEL ---------------- //
     const payload = {
       input_image,
       queries,
@@ -55,13 +50,13 @@ const Interactive_response_handler = async (req, res) => {
 
     console.log("Sending to ML model:", JSON.stringify(payload, null, 2));
 
-    // ---------------- SEND TO MODEL ---------------- //
+    //  SEND TO MODEL 
     const response = await axios.post(MODEL_URL, payload, {
       timeout: 180000, // 3 minutes
       headers: { "Content-Type": "application/json" },
     });
 
-    // ---------------- SUCCESS ---------------- //
+    //  SUCCESS 
     return res.status(200).json({
       success: true,
       model_response: response.data,

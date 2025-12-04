@@ -4,7 +4,7 @@ import { Upload, Image as ImageIcon, CheckCircle, X } from "lucide-react";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 import { useTheme } from "../Context/theme/Themecontext.jsx";
 
-export default function Chatmiddle() {
+export default function Chatmiddle({boundingBoxes=[],onImageChange}) {
   const { darkMode } = useTheme();
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
@@ -16,7 +16,8 @@ export default function Chatmiddle() {
 
   const fileInputRef = useRef(null);
   const fileRef = useRef(null);
-
+ const canvasRef = useRef(null);
+  const imageRef = useRef(null);
   // CLOUDINARY UPLOAD
   const uploadToCloudinary = async () => {
     if (!fileRef.current) {
@@ -123,6 +124,67 @@ export default function Chatmiddle() {
     };
   }, [tempPreview, finalImage]);
 
+ useEffect(() => {
+    if (activeSessionId?.publicImageURL && boundingBoxes.length > 0 && imageRef.current) {
+      drawBoundingBoxes();
+    }
+    
+    
+  }, [boundingBoxes,activeSessionId?.publicImageURL]);
+    useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    onImageChange?.();
+  }, [activeSessionId?.publicImageURL]);
+const drawBoundingBoxes = () => {
+  console.log("Drawing bounding boxes:", boundingBoxes);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+      const img = imageRef.current;
+
+    if (!img || !img.complete) return;
+
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+const colors = ['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+    // Draw image
+    // ctx.drawImage(img, 0, 0);
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Draw boxes
+    boundingBoxes.forEach((box, idx) => {
+      console.log(box.obbox);
+      const [cx, cy, w, h, angle] = box.obbox;
+      const x = cx * canvas.width;
+      const y = cy * canvas.height;
+      const width = w * canvas.width;
+      const height = h * canvas.height;
+      
+     ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((angle * Math.PI) / 180);
+      
+      const color = colors[idx % colors.length];
+      ctx.strokeStyle =color;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-width / 2, -height / 2, width, height);
+      ctx.restore();
+    });
+  };
+
+   const handleImageLoad = () => {
+    if (canvasRef.current && imageRef.current && boundingBoxes.length > 0) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const img = imageRef.current;
+      drawBoundingBoxes();
+    }
+  };
+
+
   // No active session state
   if (!activeSessionId) {
     return (
@@ -149,15 +211,37 @@ export default function Chatmiddle() {
       darkMode ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
       {activeSessionId.publicImageURL ? (
-        // Image Display
-        <div className="relative w-full h-full flex items-center justify-center p-8">
-          <img
-            src={activeSessionId.publicImageURL}
-            alt="Satellite imagery"
-            className={`max-w-full max-h-full object-contain rounded-2xl shadow-2xl border-2 ${
-              darkMode ? 'border-gray-700' : 'border-gray-200'
-            }`}
-          />
+        // Image Display with Bounding Boxes
+      <div className="relative w-full h-full flex items-center justify-center p-8">
+          {boundingBoxes.length > 0 ? (
+            <div className="relative">
+              <img
+                ref={imageRef}
+                src={activeSessionId.publicImageURL}
+                alt="Satellite imagery"
+                onLoad={handleImageLoad}
+                className={`max-w-full max-h-full object-contain rounded-2xl shadow-2xl border-2 ${
+                  darkMode ? 'border-gray-700' : 'border-gray-200'
+                }`}
+              />
+              <canvas
+                ref={canvasRef}
+                className={`absolute top-0 left-0 max-w-full max-h-full object-contain rounded-2xl`}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                }}
+              />
+            </div>
+          ) : (
+            <img
+              src={activeSessionId.publicImageURL}
+              alt="Satellite imagery"
+              className={`max-w-full max-h-full object-contain rounded-2xl shadow-2xl border-2 ${
+                darkMode ? 'border-gray-700' : 'border-gray-200'
+              }`}
+            />
+          )}
         </div>
       ) : (
         // Upload Area

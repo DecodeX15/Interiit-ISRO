@@ -4,13 +4,16 @@ import Chatright from "../Components/Chatright";
 import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ChatEvalMode from "./ChatEvalMode.jsx";
+import ChatEvalModeee from "./Chateval2.jsx";
 import { useTheme } from "../Context/theme/Themecontext";
 import { Zap, BarChart3, ChevronRight } from "lucide-react";
 
 export default function Chat() {
-  const [mode, setMode] = useState("Evaluation Mode");
+  const [mode, setMode] = useState("interactive");
   const { darkMode } = useTheme();
-
+  const [boundingBoxes, setBoundingBoxes] = useState([]);
+  const [sidebarOpen, setSidebarOpen]=useState (true);
+  const clearBoundingBoxes = () => setBoundingBoxes([]);
   return (
     <div
       className={`relative flex flex-col max-h-screen h-auto overflow-y-auto z-0 ${
@@ -108,8 +111,13 @@ export default function Chat() {
           direction="horizontal"
           className="p-1 flex-1 h-screen w-screen flex min-h-[calc(100vh-178px)] max-h-[calc(100vh-178px)]"
         >
-          <Panel defaultSize={20} minSize={20} className="rounded-2xl">
-            <ChatLeft />
+         <Panel 
+            defaultSize={20} 
+            minSize={sidebarOpen ? 20 : 5} 
+            maxSize={sidebarOpen ? 40 : 5}
+            className="rounded-2xl"
+          >
+            <ChatLeft sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           </Panel>
 
           <PanelResizeHandle
@@ -121,7 +129,7 @@ export default function Chat() {
           />
 
           <Panel defaultSize={40} minSize={20} className="rounded-2xl">
-            <Chatmiddle />
+            <Chatmiddle boundingBoxes={boundingBoxes} onImageChange={clearBoundingBoxes}/>
           </Panel>
 
           <PanelResizeHandle
@@ -133,11 +141,11 @@ export default function Chat() {
           />
 
           <Panel defaultSize={40} minSize={30} className="rounded-2xl">
-            <Chatright />
+            <Chatright setBoundingBoxes={setBoundingBoxes}/>
           </Panel>
         </PanelGroup>
       ) : (
-        <ChatEvalMode />
+        <ChatEvalModeee />
       )}
     </div>
   );

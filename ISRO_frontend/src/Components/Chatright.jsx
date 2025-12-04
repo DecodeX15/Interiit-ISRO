@@ -5,7 +5,7 @@ import { v4 as uuid } from "uuid";
 import handlemodelresponse from "./apicaller.js";
 import { Send, MessageSquare, Upload as UploadIcon } from "lucide-react";
 import { ShinyButton } from "./ui/shiny-button.jsx";
-
+import ChatInput from "./ui/chat-input.jsx";
 function createMessage(role, content) {
   return {
     id: uuid(),
@@ -15,11 +15,11 @@ function createMessage(role, content) {
   };
 }
 
-export default function Chatright() {
+export default function Chatright({ setBoundingBoxes }) {
   const { darkMode } = useTheme();
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
-
+const [queryType, setQueryType] = useState("Captioning");
   const [message, setMessage] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -38,7 +38,7 @@ export default function Chatright() {
     setAiLoading(false);
   }, [activeSessionId?.sessionId]);
 
-  const handleSend = async (e) => {
+  const handleSend = async (e,message,queryType) => {
     try {
       e.preventDefault();
       if (!message.trim()) return;
@@ -81,12 +81,22 @@ export default function Chatright() {
       setAiLoading(true);
 
       const res = await handlemodelresponse(
+        queryType,
         message,
         targetSessionId,
         targetImageURL
       );
       console.log(res);
-      const aiMessage = createMessage("ai", res);
+      const answer = res.answer;
+      const boxesArray = res.boxesArray;
+      console.log(answer)
+      
+      const aiMessage = createMessage("ai", answer);
+      if (boxesArray && boxesArray.length > 0) {
+        setBoundingBoxes(boxesArray);
+      }
+        
+
       // 2) Add AI message to session
       const updatedAISessions = updatedUserSessions.map((s) => {
         if (s.sessionId === targetSessionId) {
@@ -326,7 +336,7 @@ export default function Chatright() {
           </div>
 
           {/* Input Area */}
-          <div
+          {/* <div
             className={`px-6 py-4 border-t shrink-0 ${
               darkMode
                 ? "border-gray-800 bg-gray-800/50"
@@ -358,7 +368,13 @@ export default function Chatright() {
                 <Send className="w-5 h-5" />
               </button>
             </form>
-          </div>
+          </div> */}
+          <ChatInput
+            queryType={queryType}
+            onSend={handleSend}
+            disabled={aiLoading}
+            placeholder="Ask a question about the image..."
+          />
         </>
       )}
     </div>

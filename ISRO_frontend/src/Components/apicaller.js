@@ -1,120 +1,11 @@
 import axios from "axios";
 
-// ------------------ KEYWORDS ------------------ //
+//  API CALLER FUNCTION
 
-const CAPTION_KEYWORDS = [
-  "describe",
-  "caption",
-  "summarize",
-  "explain",
-  "details",
-  "overview",
-  "scene",
-  "context",
-  "summary",
-  "content",
-  "visualize",
-  "depict",
-  "what",
-];
-
-const GROUNDING_KEYWORDS = [
-  "where",
-  "locate",
-  "box",
-  "position",
-  "highlight",
-  "identify",
-  "mark",
-  "find",
-  "pointer",
-  "spot",
-  "trace",
-  "detect",
-  "localize",
-];
-
-const ATTRIBUTE_BINARY = [
-  "is",
-  "exists",
-  "present",
-  "visible",
-  "contain",
-  "appear",
-  "presence",
-  "any",
-  "existence",
-  "bool",
-  "pillar",
-  "plane",
-  "digit",
-];
-
-const ATTRIBUTE_NUMERIC = [
-  "how",
-  "many",
-  "count",
-  "number",
-  "quantity",
-  "total",
-  "amount",
-  "sum",
-  "tally",
-  "compute",
-];
-
-const ATTRIBUTE_SEMANTIC = [
-  "color",
-  "type",
-  "material",
-  "shape",
-  "category",
-  "kind",
-  "label",
-  "semantic",
-  "appearance",
-  "texture",
-  "class",
-];
-
-// ------------------ DETECT QUERY TYPE ------------------ //
-
-function detectQueryType(prompt) {
-  const p = prompt.toLowerCase();
-
-  if (CAPTION_KEYWORDS.some((k) => p.includes(k))) return "caption_query";
-  if (GROUNDING_KEYWORDS.some((k) => p.includes(k))) return "grounding_query";
-  if (
-    ATTRIBUTE_BINARY.some((k) => p.includes(k)) ||
-    ATTRIBUTE_NUMERIC.some((k) => p.includes(k)) ||
-    ATTRIBUTE_SEMANTIC.some((k) => p.includes(k))
-  ) {
-    return "attribute_query";
-  }
-
-  // DEFAULT
-  return "caption_query";
-}
-
-// ------------------ DETECT ATTRIBUTE SUBTYPE ------------------ //
-
-function detectAttributeSubtype(prompt) {
-  const p = prompt.toLowerCase();
-
-  if (ATTRIBUTE_NUMERIC.some((k) => p.includes(k))) return "numeric";
-  if (ATTRIBUTE_SEMANTIC.some((k) => p.includes(k))) return "semantic";
-  return "binary";
-}
-
-// ------------------ API CALLER ------------------ //
-
-const handlemodelresponse = async (prompt, input_image, image_url) => {
+const handlemodelresponse = async (queryType,prompt, input_image, image_url) => {
   try {
     if (!prompt || !input_image) return "Missing prompt or image.";
-
-    // ---------------------------------------------
-    // FIXED METADATA BLOCK (unchanged)
-    // ---------------------------------------------
+    
     const inputPayload = {
       image_id: input_image,
       image_url: image_url,
@@ -125,31 +16,25 @@ const handlemodelresponse = async (prompt, input_image, image_url) => {
       },
     };
 
-    const queryType = detectQueryType(prompt);
-
-    // Always keep all three attribute fields
     const binaryObj = { instruction: null };
     const numericObj = { instruction: null };
     const semanticObj = { instruction: null };
 
-    let attributeSubtype = null;
-    if (queryType === "attribute_query") {
-      attributeSubtype = detectAttributeSubtype(prompt);
+   
 
-      if (attributeSubtype === "binary") binaryObj.instruction = prompt;
-      if (attributeSubtype === "numeric") numericObj.instruction = prompt;
-      if (attributeSubtype === "semantic") semanticObj.instruction = prompt;
-    }
+      if (queryType === "Binary") binaryObj.instruction = prompt;
+      if (queryType === "Numeric") numericObj.instruction = prompt;
+      if (queryType === "Semantic") semanticObj.instruction = prompt;
+    
 
-    // ALWAYS include all queries — NEVER NULL
     const body = {
       input_image: inputPayload,
       queries: {
         caption_query: {
-          instruction: queryType === "caption_query" ? prompt : null,
+          instruction: queryType === "Captioning" ? prompt : null,
         },
         grounding_query: {
-          instruction: queryType === "grounding_query" ? prompt : null,
+          instruction: queryType === "Grounding" ? prompt : null,
         },
         attribute_query: {
           binary: binaryObj,
@@ -158,56 +43,76 @@ const handlemodelresponse = async (prompt, input_image, image_url) => {
         },
       },
     };
-
-    console.log("🔥 Final Payload →", JSON.stringify(body, null, 2));
+    console.log(body,queryType)
+    console.log("Final Payload: ", JSON.stringify(body, null, 2));
 
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_ENDPOINT}/api/interactive_analysis`,
       body
     );
-
-    // ---------------- Clean Output Return ---------------- //
-
-    // ---------------- Clean Model Response Extractor ---------------- //
     console.log(response);
     if (response?.data?.success) {
       const modelQueries = response.data.model_response.queries;
       const q = body.queries;
-
+      
       // CAPTION
       if (q.caption_query.instruction) {
-        return (
+        console.log("reached caption")
+        return ({
+          boxesArray:null,
+          answer:
           modelQueries.caption_query?.response || "⚠️ Empty caption response."
+        }
         );
       }
 
       // GROUNDING
       if (q.grounding_query.instruction) {
-        return (
-          modelQueries.grounding_query?.response ||
-          "⚠️ Empty grounding response."
-        );
+        console.log("reached grounding")
+        
+        const number=modelQueries.grounding_query?.response.length;
+        console.log(number)
+        const boxesArray=modelQueries.grounding_query?.response;
+        console.log(boxesArray)
+        let answer= "";
+        if(number==0){
+          answer= "There is no object matching the description in this image."
+        }
+        else if(number==1){
+          answer= "There is only 1 in this image, I have marked it with a bounding box."
+        }
+        else
+        {
+
+          answer= `There are ${number} in this image, I have marked them with bounding boxes.`
+        }
+        console.log("reached end of ground func")
+        return ({boxesArray,answer});
       }
 
       // ATTRIBUTE
       if (q.attribute_query) {
+        console.log("reached attribute")
+        let boxesArray= null;
+        let answer=""
         if (q.attribute_query.binary.instruction) {
-          return (
+          answer=
             modelQueries.attribute_query?.binary.response || "⚠️ Empty binary response."
-          );
+          
         }
         if (q.attribute_query.numeric.instruction) {
-          return (
+          answer=
             modelQueries.attribute_query?.numeric.response ||
             "⚠️ Empty numeric response."
-          );
+      
         }
         if (q.attribute_query.semantic.instruction) {
-          return (
+          answer=
             modelQueries.attribute_query?.semantic.response ||
             "⚠️ Empty semantic response."
-          );
+          
         }
+        return ({boxesArray,answer})
       }
     }
     return "⚠️ No valid model response.";
