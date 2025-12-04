@@ -8,7 +8,7 @@ import { useTheme } from "../Context/theme/Themecontext";
 import { Zap, BarChart3, ChevronRight } from "lucide-react";
 
 export default function Chat() {
-  const [mode, setMode] = useState("interactive");
+  const [mode, setMode] = useState("Evaluation Mode");
   const { darkMode } = useTheme();
 
   return (

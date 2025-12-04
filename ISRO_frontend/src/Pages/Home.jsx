@@ -6,7 +6,6 @@ import TextType from "../Components/ui/TextType.jsx";
 import StyleSlider from "../Components/Style_slider.jsx";
 import { LayoutTextFlipDemo } from "../Components/LayoutTextFlipDemo.jsx";
 import { motion } from "framer-motion";
-import { ShinyButton } from "../Components/ui/shiny-button";
 function Home() {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
@@ -64,7 +63,6 @@ function Home() {
                 </span>
               </h1>
 
-              <ShinyButton>Shiny Button</ShinyButton>
               <p
                 className={`text-xl md:text-2xl max-w-3xl mx-auto ${
                   darkMode ? "text-gray-300" : "text-gray-600"
