@@ -5,7 +5,7 @@ import axios from "axios";
 const handlemodelresponse = async (queryType,prompt, input_image, image_url) => {
   try {
     if (!prompt || !input_image) return "Missing prompt or image.";
-    
+      console.log("Input Image ID:", input_image);
     const inputPayload = {
       image_id: input_image,
       image_url: image_url,
@@ -28,10 +28,7 @@ const handlemodelresponse = async (queryType,prompt, input_image, image_url) => 
     
 
     const body = {
-      input_image: {
-        image_id: image_id,
-        image_url: imageURL,
-      },
+      input_image: inputPayload,
       queries: {
         caption_query: {
           instruction: queryType === "Captioning" ? prompt : null,
@@ -121,6 +118,7 @@ const handlemodelresponse = async (queryType,prompt, input_image, image_url) => 
     return "⚠️ No valid model response.";
   } catch (err) {
     console.error("❌ Model error:", err?.response?.data?.error);
+    console.log(err.message)
     return err?.response?.data?.error;
   }
 };
