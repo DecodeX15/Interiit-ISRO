@@ -624,52 +624,14 @@ obbox: [
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
 
 ## 👥 Team
 
-**Built by:** Team DecodeX15  
+**Built by:** Team_24 
 **For:** Inter IIT Tech Meet 14.0 x ISRO
 
 ---
 
-## 🔗 Links
-
-- **Frontend Repository:** [ISRO_frontend](../ISRO_frontend)
-- **Full Stack Repository:** [Interiit-ISRO](https://github.com/DecodeX15/Interiit-ISRO)
-- **Issue Tracker:** [GitHub Issues](https://github.com/DecodeX15/Interiit-ISRO/issues)
-
----
-
-## 📞 Support
-
-For issues or questions:
-
-1. Check existing GitHub issues
-2. Create a new issue with detailed description
-3. Include:
-   - Error message
-   - Request payload
-   - ML model response
-   - Environment configuration
-
----
 
 ## 🐛 Troubleshooting
 
@@ -696,8 +658,3 @@ For issues or questions:
 - Verify ML model returns valid JSON
 - Check content-type headers
 
----
-
-**Last Updated:** December 2025  
-**Version:** 1.0.0  
-**Status:** Active Development
