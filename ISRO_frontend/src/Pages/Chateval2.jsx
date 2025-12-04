@@ -55,9 +55,10 @@ const ChatEvalModeee = () => {
       // Parse input JSON
       const input = JSON.parse(jsonInput);
       console.log(input);
+      const API=import.meta.env.VITE_BACKEND_ENDPOINT;
+      
       setImageUrl(input.input_image.image_url);
-        const apiUrl= "http://194.68.245.32:22100"
-          const response = await fetch(`${apiUrl}/api/infer`, {
+          const response = await fetch(`${API}/api/evaluation`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ const ChatEvalModeee = () => {
         console.log(outputJson)
       setJsonOutput(JSON.stringify(outputJson, null, 2));
       // Extract bounding boxes
-      const boxes = Object.values(outputJson.queries.grounding_query.response).map(box => ({
+      const boxes = Object.values(outputJson.data.queries.grounding_query.response).map(box => ({
         id: box["object-id"],
         coords: box.obbox
       }));
