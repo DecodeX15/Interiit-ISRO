@@ -68,12 +68,29 @@ const ChatEvalModeee = () => {
         const outputJson=await response.json()
         console.log(outputJson)
       setJsonOutput(JSON.stringify(outputJson, null, 2));
-      // Extract bounding boxes
-      const boxes = Object.values(outputJson.data.queries.grounding_query.response).map(box => ({
-        id: box["object-id"],
-        coords: box.obbox
-      }));
-      setBoundingBoxes(boxes);
+
+
+      // Safely extract bounding boxes
+    try {
+      const groundingResponse = outputJson?.data?.queries?.grounding_query?.response;
+      
+      if (Array.isArray(groundingResponse) && groundingResponse.length > 0) {
+        const boxes = groundingResponse.map((box, idx) => ({
+          id: box["object-id"] || idx,
+          coords: box.obbox, // Expecting 8-coordinate array [x1,y1,x2,y2,x3,y3,x4,y4]
+          label: box.label || `Object ${idx + 1}`,
+        }));
+        
+        console.log("📍 Bounding boxes:", boxes);
+        setBoundingBoxes(boxes);
+      } else {
+        console.log("ℹ️ No grounding query response");
+        setBoundingBoxes([]);
+      }
+    } catch (boxError) {
+      console.warn("⚠️ Error parsing bounding boxes:", boxError);
+      setBoundingBoxes([]);
+    }
 
       const endTime = Date.now();
       setExecutionTime(((endTime - startTime) / 1000).toFixed(2));
@@ -106,32 +123,35 @@ const ChatEvalModeee = () => {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    const colors = ['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
     
     boundingBoxes.forEach((box, idx) => {
-      const [cx, cy, w, h, angle] = box.coords;
-      const x = cx * canvas.width;
-      const y = cy * canvas.height;
-      const width = w * canvas.width;
-      const height = h * canvas.height;
+    
+      const coords= box.coords;
+        const x1 = coords[0] * canvas.width;
+        const y1 = coords[1] * canvas.height;
+        const x2 = coords[2] * canvas.width;
+        const y2 = coords[3] * canvas.height;
+        const x3 = coords[4] * canvas.width;
+        const y3 = coords[5] * canvas.height;
+        const x4 = coords[6] * canvas.width;
+        const y4 = coords[7] * canvas.height;
       
+      const color = "#f97316"
+
+      ctx.save()
+       ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.lineTo(x4, y4);
+       ctx.closePath();
       ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate((angle * Math.PI) / 180);
-      
-      const color = colors[idx % colors.length];
+     
+      ctx.fill();
       ctx.strokeStyle = color;
       ctx.lineWidth = 3;
-      ctx.strokeRect(-width / 2, -height / 2, width, height);
-      
-      // Label background
-    //   ctx.fillStyle = color;
-    //   ctx.fillRect(-width / 2, -height / 2 - 25, 80, 25);
-      
-    //   // Label text
-    //   ctx.fillStyle = 'white';
-    //   ctx.font = 'bold 14px sans-serif';
-    //   ctx.fillText(`${box.label} #${box.id}`, -width / 2 + 5, -height / 2 - 8);
+       ctx.stroke()
+     
       
       ctx.restore();
     });

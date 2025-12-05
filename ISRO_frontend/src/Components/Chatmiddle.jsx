@@ -150,27 +150,41 @@ const drawBoundingBoxes = () => {
 
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;
-const colors = ['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
+// const colors = ['#f97316', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'];
     // Draw image
     // ctx.drawImage(img, 0, 0);
  ctx.clearRect(0, 0, canvas.width, canvas.height);
     // Draw boxes
     boundingBoxes.forEach((box, idx) => {
-      console.log(box.obbox);
-      const [cx, cy, w, h, angle] = box.obbox;
-      const x = cx * canvas.width;
-      const y = cy * canvas.height;
-      const width = w * canvas.width;
-      const height = h * canvas.height;
+    
+      const coords= box.obbox;
+      console.log(coords)
+        const x1 = coords[0] * canvas.width;
+        const y1 = coords[1] * canvas.height;
+        const x2 = coords[2] * canvas.width;
+        const y2 = coords[3] * canvas.height;
+        const x3 = coords[4] * canvas.width;
+        const y3 = coords[5] * canvas.height;
+        const x4 = coords[6] * canvas.width;
+        const y4 = coords[7] * canvas.height;
       
-     ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate((angle * Math.PI) / 180);
-      
-      const color = colors[idx % colors.length];
-      ctx.strokeStyle =color;
+      const color = "#f97316"
+
+      ctx.save()
+       ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineTo(x3, y3);
+        ctx.lineTo(x4, y4);
+       ctx.closePath();
+      ctx.save();
+     
+      ctx.fill();
+      ctx.strokeStyle = color;
       ctx.lineWidth = 3;
-      ctx.strokeRect(-width / 2, -height / 2, width, height);
+       ctx.stroke()
+     
+      
       ctx.restore();
     });
   };
