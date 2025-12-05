@@ -19,13 +19,36 @@ export default function Chatright({ setBoundingBoxes }) {
   const { darkMode } = useTheme();
   const { sessions, setSessions, activeSessionId, setActiveSessionId } =
     useContext(sessioncontext);
-const [queryType, setQueryType] = useState("Captioning");
+  const [queryType, setQueryType] = useState("Captioning");
   const [message, setMessage] = useState("");
   const textareaRef = useRef(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   const scrollContainerRef = useRef(null);
   const bottomRef = useRef(null);
+  const thinkingMessages = [
+    "Thinking...",
+    "Analysing...",
+    "Processing...",
+    "Almost done...",
+  ];
+
+  const [currentMsgIndex, setCurrentMsgIndex] = useState(0);
+
+  useEffect(() => {
+    if (!aiLoading) return;
+    setCurrentMsgIndex(0);
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      if (step >= thinkingMessages.length) {
+        clearInterval(interval);
+        return;
+      }
+      setCurrentMsgIndex(step);
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [aiLoading]);
 
   useEffect(() => {
     if (bottomRef.current) {
@@ -39,7 +62,7 @@ const [queryType, setQueryType] = useState("Captioning");
     setAiLoading(false);
   }, [activeSessionId?.sessionId]);
 
-  const handleSend = async (e,message,queryType) => {
+  const handleSend = async (e, message, queryType) => {
     try {
       if (e) e.preventDefault();
       if (!message.trim()) return;
@@ -90,13 +113,12 @@ const [queryType, setQueryType] = useState("Captioning");
       console.log(res);
       const answer = res.answer;
       const boxesArray = res.boxesArray;
-      console.log(answer)
-      
+      console.log(answer);
+
       const aiMessage = createMessage("ai", answer);
       if (boxesArray && boxesArray.length > 0) {
         setBoundingBoxes(boxesArray);
       }
-        
 
       // 2) Add AI message to session
       const updatedAISessions = updatedUserSessions.map((s) => {
@@ -136,7 +158,8 @@ const [queryType, setQueryType] = useState("Captioning");
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + "px"; // max 160px
+      textareaRef.current.style.height =
+        Math.min(textareaRef.current.scrollHeight, 160) + "px"; // max 160px
     }
   }, [message]);
 
@@ -338,9 +361,15 @@ const [queryType, setQueryType] = useState("Captioning");
                     </div>
                   </div>
                 </div>
-                <ShinyButton>Thinking......</ShinyButton>
+
+                <ShinyButton>
+                  <span className="animate-fadeInUp">
+                    {thinkingMessages[currentMsgIndex]}
+                  </span>
+                </ShinyButton>
               </>
             )}
+
             <div ref={bottomRef} />
           </div>
 
