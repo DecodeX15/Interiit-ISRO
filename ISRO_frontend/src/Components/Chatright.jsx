@@ -46,7 +46,7 @@ export default function Chatright({ setBoundingBoxes }) {
         return;
       }
       setCurrentMsgIndex(step);
-    }, 30000);
+    }, 25000);
     return () => clearInterval(interval);
   }, [aiLoading]);
 
