@@ -1,6 +1,6 @@
 // src/components/Chatmiddle.jsx
 import { useContext, useEffect, useRef, useState } from "react";
-import { Upload, Image as ImageIcon, CheckCircle, X } from "lucide-react";
+import { Image ,Upload, Image as ImageIcon, CheckCircle, X,Maximize2 } from "lucide-react";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 import { useTheme } from "../Context/theme/Themecontext.jsx";
 
@@ -221,7 +221,32 @@ const drawBoundingBoxes = () => {
     }`}>
       {activeSessionId.publicImageURL ? (
         // Image Display with Bounding Boxes
-      <div className="relative w-full h-full flex items-center justify-center p-8">
+      <div className="relative w-full h-full flex flex-col items-center justify-center p-8">
+        <div className={`shrink-0 px-6 py-4 border-b `}>
+    <div className="flex items-center gap-3">
+      <div className={`p-2 rounded-lg ${
+        darkMode ? 'bg-blue-600/20' : 'bg-blue-100'
+      }`}>
+        <Image className={`w-5 h-5 ${
+          darkMode ? 'text-blue-400' : 'text-blue-600'
+        }`} />
+      </div>
+      <div>
+        <h3 className={`text-lg font-bold ${
+          darkMode ? 'text-white' : 'text-gray-900'
+        }`}>
+          Image Analysis
+        </h3>
+        <p className={`text-sm ${
+          darkMode ? 'text-gray-400' : 'text-gray-600'
+        }`}>
+          {boundingBoxes.length > 0 
+            ? `Analyzing with ${boundingBoxes.length} detection${boundingBoxes.length !== 1 ? 's' : ''}`
+            : 'Satellite imagery viewer'}
+        </p>
+      </div>
+    </div>
+  </div>
           {boundingBoxes.length > 0 ? (
             <div className="relative">
               <img

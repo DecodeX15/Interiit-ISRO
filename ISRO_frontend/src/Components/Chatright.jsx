@@ -3,7 +3,7 @@ import { useTheme } from "../Context/theme/Themecontext.jsx";
 import { sessioncontext } from "../Context/session/sessioncontext.jsx";
 import { v4 as uuid } from "uuid";
 import handlemodelresponse from "./apicaller.js";
-import { Send, MessageSquare, Upload as UploadIcon } from "lucide-react";
+import { MessageSquare,Brain, Upload as UploadIcon } from "lucide-react";
 import { ShinyButton } from "./ui/shiny-button.jsx";
 import ChatInput from "./ui/chat-input.jsx";
 function createMessage(role, content) {
@@ -216,11 +216,14 @@ const [queryType, setQueryType] = useState("Captioning");
             }`}
           >
             <h2
-              className={`text-lg font-bold ${
+              className={`flex justify-between text-lg font-bold ${
                 darkMode ? "text-white" : "text-gray-900"
               }`}
             >
               Chat Analysis
+            <span>
+              <Brain className="w-8 h-8 text-blue-500" />
+            </span>
             </h2>
             <p
               className={`text-sm mt-1 ${
@@ -344,48 +347,7 @@ const [queryType, setQueryType] = useState("Captioning");
             <div ref={bottomRef} />
           </div>
 
-          {/* Input Area */}
-          {/* <div
-            className={`px-6 py-4 border-t shrink-0 ${
-              darkMode
-                ? "border-gray-800 bg-gray-800/50"
-                : "border-gray-200 bg-gray-50"
-            }`}
-          >
-            <form onSubmit={handleSend} className="flex gap-3">
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Ask a question about the image..."
-                disabled={aiLoading}
-                rows={1}
-                style={{ resize: "none", maxHeight: 160 }}
-                className={`flex-1 px-4 py-4 rounded-xl border-2 outline-none transition-all ${
-                  darkMode
-                    ? "bg-gray-900 border-gray-700 text-white placeholder-gray-500 focus:border-orange-500"
-                    : "bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:border-orange-400"
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
-              />
-              <button
-                type="submit"
-                disabled={aiLoading || !message.trim()}
-                className={`px-5 py-3  rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95 flex items-center gap-2 ${
-                  darkMode
-                    ? "bg-orange-600  hover:from-orange-700 hover:to-blue-700"
-                    : "bg-orange-500  hover:from-orange-600 hover:to-blue-600"
-                } text-white`}
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </form>
-          </div> */}
+
           <ChatInput
             queryType={queryType}
             onSend={handleSend}

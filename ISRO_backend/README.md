@@ -74,7 +74,7 @@ ISRO_backend/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/DecodeX15/Interiit-ISRO.git
+   unzip Interiit-ISRO.zip
    cd Interiit-ISRO/ISRO_backend
    ```
 
@@ -585,7 +585,7 @@ The backend expects ML model endpoint to:
     "grounding_query": {
       "response": [
         {
-          "obbox": [center_x, center_y, width, height, angle]
+          "obbox": [x1,y1,x2,y2,x3,y3.x4.y4]
         }
       ]
     },

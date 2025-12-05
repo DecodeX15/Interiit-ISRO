@@ -8,7 +8,6 @@ import Footer from "./Components/Footer.jsx";
 import Themeprovider from "./Context/theme/Themeprovider.jsx";
 import StarField from "./Components/ui/StarField";
 import ErrorPage from "../src/Components/Error.jsx"; 
-import ChatInput from "./Components/ui/chat-input.jsx";
 
 export default function App() {
   return (
@@ -23,7 +22,6 @@ export default function App() {
               <Route path="/chat" element={<Chat />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<ErrorPage />} />
-              <Route path="/chatinput" element={<ChatInput />} />
             </Routes>
 
             <Footer />

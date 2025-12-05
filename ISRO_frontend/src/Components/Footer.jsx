@@ -27,12 +27,12 @@ function Footer
               </div>
             </div>
             
-            <div className="flex items-center gap-8">
+            {/* <div className="flex items-center gap-8">
               <a href="#" className={`text-sm hover:underline ${darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors`}>
                 Report
               </a>
               
-            </div>
+            </div> */}
             
             
           </div>

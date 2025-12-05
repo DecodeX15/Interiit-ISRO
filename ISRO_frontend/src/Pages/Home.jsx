@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Globe, Info, MessageSquare, Rocket, Sparkles } from "lucide-react";
+import { Rocket, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../Context/theme/Themecontext";
 import TextType from "../Components/ui/TextType.jsx";

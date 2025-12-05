@@ -6,7 +6,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ChatEvalMode from "./ChatEvalMode.jsx";
 import ChatEvalModeee from "./Chateval2.jsx";
 import { useTheme } from "../Context/theme/Themecontext";
-import { Zap, BarChart3, ChevronRight } from "lucide-react";
+import { Bot, BarChart3, ChevronRight } from "lucide-react";
 export default function Chat() {
   const [mode, setMode] = useState("interactive");
   const { darkMode } = useTheme();
@@ -43,7 +43,7 @@ export default function Chat() {
                 }`}
               >
                 {mode === "interactive" ? (
-                  <Zap
+                  <Bot
                     className={`w-5 h-5 ${
                       darkMode ? "text-orange-400" : "text-orange-600"
                     }`}
