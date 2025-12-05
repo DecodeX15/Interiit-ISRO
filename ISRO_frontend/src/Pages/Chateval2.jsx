@@ -160,10 +160,10 @@ const ChatEvalModeee = () => {
       ctx.lineTo(x3, y3);
       ctx.lineTo(x4, y4);
       ctx.closePath();
-      ctx.save();
       ctx.strokeStyle = color;
       ctx.lineWidth = 3;
       ctx.stroke();
+      ctx.save();
 
       ctx.restore();
     });
@@ -204,7 +204,7 @@ const ChatEvalModeee = () => {
   };
 
   return (
-    <div className={`flex-1 p-6 ${darkMode ? "bg-gray-900" : "bg-gray-200"}`}>
+    <div className={`flex-1 p-6 ${darkMode ? "bg-gray-900" : "bg-gray-200 z-100"}`}>
       <div className="max-w-[1800px] mx-auto h-full">
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
@@ -546,52 +546,7 @@ const ChatEvalModeee = () => {
               )}
             </div>
 
-            {boundingBoxes.length > 0 && (
-              <div
-                className={`px-6 py-4 border-t ${
-                  darkMode
-                    ? "border-gray-700 bg-gray-800/50"
-                    : "border-gray-200 bg-gray-50"
-                }`}
-              >
-                <h4
-                  className={`text-sm font-semibold mb-3 ${
-                    darkMode ? "text-white" : "text-gray-900"
-                  }`}
-                >
-                  Detected Objects ({boundingBoxes.length})
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {boundingBoxes.map((box, idx) => {
-                    const colors = [
-                      "#f97316",
-                      "#3b82f6",
-                      "#10b981",
-                      "#ef4444",
-                      "#8b5cf6",
-                    ];
-                    const color = colors[idx % colors.length];
-                    return (
-                      <span
-                        key={idx}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium"
-                        style={{
-                          backgroundColor: `${color}20`,
-                          border: `2px solid ${color}`,
-                          color: darkMode ? "#fff" : "#000",
-                        }}
-                      >
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                        {/* {box.label} #{box.id} */}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            
           </div>
         </div>
       </div>
